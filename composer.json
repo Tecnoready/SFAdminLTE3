@@ -1,0 +1,24 @@
+{
+    "name": "tecnoready/sfadminlte3",
+    "description": "Bundle symfony 4 con plantilla AdminLTE 3 ",
+    "keywords": ["bundle","symfony3"],
+    "homepage": "https://github.com/Tecnoready/SFAdminLTE3",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Carlos Mendoza",
+            "email": "inhack20@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=7.1.0"
+    },
+    "autoload": {
+        "psr-4": { "Tecnoready\\SFAdminLTE3\\": "" },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    }
+}
