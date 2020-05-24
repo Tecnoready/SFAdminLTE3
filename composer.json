@@ -16,7 +16,7 @@
         "php": ">=7.1.0"
     },
     "autoload": {
-        "psr-4": { "Tecnoready\\SFAdminLTE3Bundle": "" },
+        "psr-4": { "Tecnoready\\SFAdminLTE3Bundle\\": "" },
         "exclude-from-classmap": [
             "/Tests/"
         ]
