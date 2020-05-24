@@ -1,7 +1,7 @@
 {
-    "name": "tecnoready/sfadminlte3",
+    "name": "tecnoready/sf-adminlte3-bundle",
     "description": "Bundle symfony 4 con plantilla AdminLTE 3 ",
-    "keywords": ["bundle","symfony3"],
+    "keywords": ["bundle","symfony4"],
     "homepage": "https://github.com/Tecnoready/SFAdminLTE3",
     "type": "library",
     "license": "MIT",
@@ -16,7 +16,7 @@
         "php": ">=7.1.0"
     },
     "autoload": {
-        "psr-4": { "Tecnoready\\SFAdminLTE3\\": "" },
+        "psr-4": { "Tecnoready\\SF\\AdminLTE3\\": "" },
         "exclude-from-classmap": [
             "/Tests/"
         ]
