@@ -1,0 +1,14 @@
+<div class="col-sm-6">
+    <h1>{{ title }}</h1>
+</div>
+<div class="col-sm-6">
+    <ol class="breadcrumb float-sm-right">
+        {% for breadcrumb in breadcrumbs %}
+            {% if loop.last == false %}
+                <li class="breadcrumb-item"><a href="{{ breadcrumb.link }}">{{ breadcrumb.label }}</a></li>
+                {% else %}
+                <li class="breadcrumb-item active">{{ breadcrumb.label }}</li>
+                {% endif %}
+            {% endfor %}
+    </ol>
+</div>

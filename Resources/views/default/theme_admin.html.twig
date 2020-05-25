@@ -1,0 +1,184 @@
+{# templates/form/my_theme.html.twig #}
+{% extends '@EasyAdmin/form/bootstrap_4.html.twig' %}
+{#{% use '@EasyAdmin/form/bootstrap_4.html.twig' %}#}
+
+{% block vich_image_cropper_widget %}
+    <div class="easyadmin-vich-image">
+        {% set _lightbox_id = 'easyadmin-lightbox-' ~ id %}
+        {% set image_prewiew = null %}
+        
+        {% if download_uri != null %}
+            {% set image_prewiew = asset(download_uri) %}
+        {% elseif form.image_crop.vars.value %}
+            {#   Imagen base 64 cuando ya fue recortada y dio error en otro campo #}
+            {% set image_prewiew = form.image_crop.vars.value %}
+        {% endif %}
+        
+        <a href="#" id="{{ _lightbox_id }}_btn" class="easyadmin-thumbnail {% if image_prewiew == null %}d-none{% endif %}" aaadata-featherlight="#{{ _lightbox_id }}" aadata-featherlight-close-on-click="anywhere">
+            <img id="{{ _lightbox_id }}_preview" src="{{ image_prewiew }}">
+        </a>
+
+        <div id="{{ _lightbox_id }}" class="easyadmin-lightbox">
+{#                    Contenido del cropperjs >#}
+        </div>
+        {% set file_upload_js %}
+            var newFile = document.getElementById('{{ form.file.vars.id }}').files[0];
+            var fileSizeInMegabytes = newFile.size > 1024 * 1024;
+            var fileSize = fileSizeInMegabytes ? newFile.size / (1024 * 1024) : newFile.size / 1024;
+            document.getElementById('{{ form.file.vars.id }}_new_file_name').innerText = newFile.name + ' (' + fileSize.toFixed(2) + ' ' + (fileSizeInMegabytes ? 'MB' : 'KB') + ')';
+        {% endset %}
+
+        <div class="easyadmin-vich-image-actions">
+            {# the container element is needed to allow customizing the <input type="file" /> #}
+            <div class="btn btn-secondary input-file-container">
+                <i class="fa fa-fw fa-upload"></i> {{ 'action.choose_file'|trans({}, 'EasyAdminBundle') }}
+                {{ form_widget(form.file, { 'attr': { 'onchange': file_upload_js }, vich: true}) }}
+            </div>
+            {{ form_widget(form.image_crop) }}
+
+            {% if form.delete is defined %}
+                {{ form_row(form.delete, { label: 'form.label.delete'|trans({}, 'VichUploaderBundle') }) }}
+            {% endif %}
+        </div>
+        <div class="small" id="{{ form.file.vars.id }}_new_file_name"></div>
+    </div>
+    {% set crop_image %}
+        {% spaceless %}
+            <div class="crop-container">
+                <div>
+                    <img class="image-preview" src="{{ image_prewiew }}" alt="">
+                </div>
+                <div class="p-2 text-center">
+                    <button type="button" class="button-crop btn btn-primary">{{ "button.crop"|trans }}</button>
+                </div>
+            </div>
+        {% endspaceless %}
+    {% endset %}
+    
+    <style>
+        .crop-container {
+            margin: 20px auto;
+            max-width: 640px;
+        }
+
+        img {
+            max-width: 100%;
+        }
+        {% if mode == "rounded" %}
+            .cropper-view-box,
+            .cropper-face {
+                border-radius: 50%;
+            }
+        {% endif %}
+    </style>
+    <script>
+        $(function(){
+            var input = document.getElementById('{{ form.file.vars["id"] }}');
+            var inputHidden = document.getElementById('{{ form.image_crop.vars.id }}');
+            var element = $("#{{ _lightbox_id }}");
+            var imagePreview = $("#{{ _lightbox_id }}_preview");
+            var btnOpen = $('#{{ _lightbox_id }}_btn');
+            var urlNew = null;
+            input.addEventListener('change', function (e) {
+                var files = e.target.files;
+                var done = function (url) {
+                  input.value = '';
+                  urlNew = url;
+                  btnOpen.click();
+                };
+                var reader;
+                var file;
+                var url;
+
+                if (files && files.length > 0) {
+                  file = files[0];
+
+                  if (URL) {
+                    done(URL.createObjectURL(file));
+                  } else if (FileReader) {
+                    reader = new FileReader();
+                    reader.onload = function (e) {
+                      done(reader.result);
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }
+              });
+            
+            btnOpen.featherlight(element,{
+                afterOpen: function(){
+                    buildCrop(this.$content,imagePreview,inputHidden,btnOpen);
+                },
+                beforeOpen: function(){
+                    var cropElemnt = ('{{ crop_image }}');
+                    element.html(cropElemnt);
+                },
+            });
+        function getRoundedCanvas(sourceCanvas) {
+            var canvas = document.createElement('canvas');
+            var context = canvas.getContext('2d');
+            var width = sourceCanvas.width;
+            var height = sourceCanvas.height;
+
+            canvas.width = width;
+            canvas.height = height;
+            context.imageSmoothingEnabled = true;
+            context.drawImage(sourceCanvas, 0, 0, width, height);
+            context.globalCompositeOperation = 'destination-in';
+            context.beginPath();
+            context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
+            context.fill();
+            return canvas;
+        }
+        
+        function buildCrop($element,imagePreview,inputHidden,btnOpen){
+            var image = $element.find('.image-preview')[0];
+            var button = $element.find('button.button-crop')[0];
+            //var result = $element.find('div.result')[0];
+            
+            if(urlNew != null){
+                image.src = urlNew;
+            }
+            var croppable = false;
+            var cropper = new Cropper(image, {
+                aspectRatio: 1,
+                viewMode: 1,
+                ready: function () {
+                    croppable = true;
+                },
+            });
+            var onClick = function () {
+                var croppedCanvas;
+                var roundedCanvas;
+                if (!croppable) {
+                    return;
+                }
+
+                // Crop
+                croppedCanvas = cropper.getCroppedCanvas();
+
+                {% if mode == "rounded" %}
+                    roundedCanvas = getRoundedCanvas(croppedCanvas);
+                {% else %}
+                    roundedCanvas = croppedCanvas;
+                {% endif %}
+                // Round
+
+                // Show
+                var dataUrl = roundedCanvas.toDataURL();
+                
+                imagePreview.attr("src",dataUrl);
+                btnOpen.removeClass("d-none");//Colocar visible
+                inputHidden.value = dataUrl;
+                urlNew = dataUrl;
+                //Cerrar pop up
+                var current = $.featherlight.current();
+                current.close();
+            };
+            //button.on("click",onClick);
+            button.onclick = onClick;
+        }
+});
+        
+    </script>
+{% endblock %}

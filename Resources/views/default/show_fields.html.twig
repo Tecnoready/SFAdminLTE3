@@ -1,0 +1,93 @@
+{% macro integer(params) %}
+    {% set options = defaults|resolve_options(params,{ required: ["field_type","value"],allowedValues: { field_type:["integer","string","association","image","datetime","time","boolean"] } }) %}
+    {% from '@SFAdminLTE3/default/show_fields.html.twig' import field as field %}
+    {{ field({
+        value: value,
+        field_type: "integer"
+    }) }}
+{% endmacro integer %}
+
+{% macro string(value,params) %}
+    {% from '@SFAdminLTE3/default/show_fields.html.twig' import field as field %}
+    {% set params = params|merge({ field_type: "string",value:value }) %}
+    {{ field(params) }}
+{% endmacro string %}
+
+{% macro text(value,params) %}
+    {% from '@SFAdminLTE3/default/show_fields.html.twig' import field as field %}
+    {% set params = params|merge({ field_type: "text",value:value }) %}
+    {{ field(params) }}
+{% endmacro text %}
+
+{% macro association(params) %}
+    {% from '@SFAdminLTE3/default/show_fields.html.twig' import field as field %}
+{% endmacro association %}
+
+{% macro image(params) %}
+    {% from '@SFAdminLTE3/default/show_fields.html.twig' import field as field %}
+{% endmacro image %}
+
+{% macro datetime(value,params) %}
+    {% from '@SFAdminLTE3/default/show_fields.html.twig' import field as field %}
+    {% if value is not null %}
+        {% set value =  value|my_date_time %}
+    {% endif %}
+    {% set params = params|merge({ field_type: "datetime",value:value }) %}
+    {{ field(params) }}
+{% endmacro datetime %}
+
+{% macro badge(value,params) %}
+    {% set options = params|resolve_options(params,{ required: ["badge_type"],allowedValues: { badge_type:["bg-primary","bg-danger","bg-success","bg-info","bg-warning","bg-dark","bg-blue"] } }) %}
+    {% from '@SFAdminLTE3/default/show_fields.html.twig' import field as field %}
+    {% if value is not null %}
+        {% set value %}
+            <span class="badge {{ options.badge_type }}">{{ value|trans }}</span>
+        {% endset %}
+    {% endif %}
+    {{ field({ field_type: "string",value:value,label: options.label }) }}
+{% endmacro badge %}
+
+{% macro date(value,params) %}
+    {% from '@SFAdminLTE3/default/show_fields.html.twig' import field as field %}
+    {% if value is not null %}
+        {% set value =  value|my_date %}
+    {% endif %}
+    {% set params = params|merge({ field_type: "date",value:value }) %}
+    {{ field(params) }}
+{% endmacro date %}
+
+{% macro time(value,params) %}
+    {% from '@SFAdminLTE3/default/show_fields.html.twig' import field as field %}
+    {% if value is not null %}
+        {% set value =  value|my_time %}
+    {% endif %}
+    {% set params = params|merge({ field_type: "time",value:value }) %}
+    {{ field(params) }}
+{% endmacro time %}
+
+{% macro boolean(params) %}
+    {% from '@SFAdminLTE3/default/show_fields.html.twig' import field as field %}
+{% endmacro boolean %}
+
+{% macro field(params) %}
+    {% set defaults = { label: null,label_parameters:{},help: null,help_parameters:{} } %}
+    {% set options = defaults|resolve_options(params,{ required: ["field_type","value"],allowedValues: { field_type:["integer","string","text","association","image","datetime","date","time","boolean"] } }) %}
+
+    <div class="form-group field-{{ options.field_type}}">
+        <label class="control-label">
+            {{ options.label|trans(options.label_parameters) }}
+        </label>
+        <div class="form-widget">
+            <div class="form-control">
+                {% if options.value is null %}
+                <span class="badge badge-secondary">Nulo</span>
+                {% else %}
+                    {{ options.value }}
+                {% endif %}
+            </div>
+            {% if options.help is not null %}
+                <small class="form-help"><i class="fa fa-fw fa-info-circle"></i> {{ options.help|trans(options.help_parameters) }}</small>
+             {% endif %}
+        </div>
+    </div>
+{% endmacro field %}

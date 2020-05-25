@@ -1,0 +1,171 @@
+{# templates/form/my_theme.html.twig #}
+{#{% use 'form_div_layout.html.twig' %}#}
+{#{% use 'bootstrap_4_horizontal_layout.html.twig' %}#}
+{% use 'bootstrap_4_layout.html.twig' %}
+
+{% block entity_widget %}
+    {{ block("choice_widget") }}
+    <script>
+        document.addEventListener("DOMContentLoaded", function (event) {
+            //console.log("DOM fully loaded and parsed");
+            $('#{{ form.vars.id }}').select2({
+                theme: 'bootstrap4'
+            });
+        });
+    </script>
+{% endblock entity_widget %}
+
+{% block date_widget %}
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+        </div>
+        {{ parent() }}
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function (event) {
+            //console.log("DOM fully loaded and parsed");
+            $('#{{ form.vars.id }}').inputmask({'alias': 'datetime', 'inputFormat': 'dd/mm/yyyy'});
+        });
+    </script>
+{% endblock %}
+
+{% block time_widget %}
+    {% set target = form.vars.id~"_tg" %}
+    <div class="input-group date" id="{{ target }}" data-target-input="nearest">
+        {{ parent() }}
+        <div class="input-group-append" data-target="#{{ target }}" data-toggle="datetimepicker">
+            <div class="input-group-text"><i class="far fa-clock"></i></div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function (event) {
+            $('#{{ target }}').datetimepicker({
+                format: 'LT'
+            });
+        });
+    </script>
+{% endblock time_widget %}
+
+{% block tel_widget %}
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+        </div>
+        {#        <input type="text" class="form-control" data-inputmask='"mask": "(999) 999-9999"' data-mask>#}
+        {{ parent() }}
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function (event) {
+            $('#{{ form.vars.id }}').inputmask({'mask': '+(999) 99 999-9999'});
+        });
+    </script>
+{% endblock tel_widget %}
+
+{% block department_detail_widget %}
+    {{ form_row(form.department) }}
+
+    {# form_row would write extra markup, so we directly write the collection #}
+    {{ form_widget(form.positionDetails) }}
+
+    {{ form_row(form.observations) }}
+
+    <script type="text/javascript">
+        var fixJs = function(collection, element){
+            $('.select2entity[data-autostart="true"]').select2entity();
+        };
+        var runJs = function(){
+{#            var table = $('#{{ form.positionDetails.vars.id }}.discount-collection');#}
+{#            Se le aplica a todas las tablas porque sino solo lo aplica a la ultima#}
+            var table = $('.discount-collection');
+            table.collection({
+                allow_duplicate: false,
+                allow_up: false,
+                allow_down: false,
+                add: '<a href="#" class="btn btn-default" title="Add element"><span class="fas fa-plus"></span></a>',
+
+                // here is the magic!
+                elements_selector: 'tr.item',
+                elements_parent_selector: '%id% tbody',
+                after_add: fixJs,
+                after_duplicate: fixJs
+            });
+        };
+        document.addEventListener("DOMContentLoaded", function (event) {
+            runJs();
+        });
+        if(document.readyState == "complete"){
+            runJs();
+            fixJs();
+        }
+
+    </script>
+{% endblock %}
+
+{# By default, collection uses the form_widget block to create its markup, but we want a table #}
+{#{% block collection_widget %}#}
+{% block wrapped_table_collection_widget %}
+    {% spaceless %}
+
+        {#
+         # This is almost a copy/paste of jquery.collection.html.twig, we can't use it as it also
+         # use form_widget. Note that we also use form_widget(prototype) instead of form_row(prototype)
+         # to avoid generating extra markup.
+         #}
+        {% if prototype is defined %}
+            {% set attr = attr|merge({'data-prototype': form_widget(prototype)}) %}
+            {% set attr = attr|merge({'data-prototype-name': prototype.vars.name}) %}
+        {% endif %}
+        {% set attr = attr|merge({'data-allow-add': allow_add ? 1 : 0}) %}
+        {% set attr = attr|merge({'data-allow-remove': allow_delete ? 1 : 0 }) %}
+        {% set attr = attr|merge({'data-name-prefix': full_name}) %}
+            <fieldset class="well">
+                <label>{{ form_label(form) }}</label>
+
+                {{ form_errors(form) }}
+
+                {# Don't forget to add the collection attributes in your markup #}
+                <table {{ block('widget_attributes') }}>
+                    <thead>
+                        <tr>
+                            {#                            <th style="width: 10px">#</th>#}
+                            <th style="width: 9em">{{ "Quantity"|trans }}</th>
+                            <th>{{ "Position"|trans }}</th>
+                            <th style="width: 10em">{{ "Actions"|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {#
+                         # we can't form_widget(form) as it would render parent markup for a collection, so
+                         # we iterate manually on children
+                         #}
+                        {% for item in form %}
+                            {{ form_widget(item,{loop:loop}) }}
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </fieldset>
+    {% endspaceless %}
+{% endblock %}
+
+{% block PositionDetailType_widget %}
+    {% if loop is not defined %}
+        {% set loop = { index: 1 } %}
+    {% endif %}
+    {# widget_attributes will generate class="item" from the DiscountCollectionType.entry_options configuration #}
+    <tr {{ block('widget_attributes') }}>
+        {#        <td>{{ loop.index }}.</td>#}
+        <td>{{ form_row(form.quantityRequired) }}</td>
+        <td>{{ form_row(form.position) }}</td>
+        <td class="text-center">
+            <a href="#" class="collection-remove btn btn-danger btn-sm" title="Delete element"><span class="fas fa-trash"></span></a>
+            <a href="#" class="collection-add btn btn-default btn-sm" title="Add element"><span class="fas fa-plus"></span></a>
+{#            <a href="#" class="collection-duplicate btn btn-info btn-sm" title="Duplicate element"><span class="fas fa-th-large"></span></a>#}
+        </td>
+    </tr>
+
+{% endblock %}
+
+{% block PositionDetailType_label %}{% endblock %}

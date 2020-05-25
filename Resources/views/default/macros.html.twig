@@ -1,0 +1,35 @@
+{% macro flashes() %}
+    {% if app.request.hasPreviousSession %}
+        {% from '@SFAdminLTE3/default/macros.html.twig' import alert as alert %}
+        
+        {% for type, messages in app.session.flashbag.all() %}
+            {% for message in messages %}
+                {{ alert(message,{ type: type }) }}
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+{% endmacro flashes %}
+
+{# Genera una alerta html #}
+{% macro alert(content,params) %}
+    {% set defaults = { dismissible: true,title: ('title.alert'|trans), type: 'success' } %}
+    {% set options = defaults|resolve_options(params,{ allowedValues: { type: ['success','danger','warning','info'] } }) %}
+    {% set icons = { danger: 'icon fas fa-ban', success: 'icon fas fa-check',warning: 'icon fas fa-exclamation-triangle',info: 'icon fas fa-info'  } %}
+
+    <div class='alert alert-{{ options.type }} alert-dismissible'>
+        {% if options.dismissible %}
+            <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button>
+        {% endif %}
+        <h5><i class='{{ icons[options.type] }}'></i> {{ options.title }} </h5>
+        {{ content }}
+    </div>
+{% endmacro alert %}
+
+{% macro loading_container() %}
+    {#{% apply spaceless %}#}<div class='l-loading-container'>{{ 'Loading content'|trans }}<div class='loading'><p class='blocktext'>
+                <span class='ellipsis_animated-inner'>
+                    <span>.</span>
+                    <span>.</span>
+                    <span>.</span>
+                </span></p></div></div>{#{% endapply %}#}
+{% endmacro loading_container %}
