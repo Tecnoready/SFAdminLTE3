@@ -224,7 +224,7 @@
 
 {# Boton de accion con formulario con proteccion csrf #}
 {% macro action(params) %}
-    {% set options = { class: "btn btn-primary",icon: null,input: {} }|resolve_options(params,{ required: ["action","entity","label","question"] }) %}
+    {% set options = { class: "btn btn-primary",icon: null,input: {},extra_name: "_extra",extra_value: null }|resolve_options(params,{ required: ["action","entity","label","question"] }) %}
     {% set question = { title: ("question.title"|trans),confirm_button_text: "question.button.yes",cancel_button_text: "question.button.no" }|resolve_options(options.question,{ required: ["text"] }) %}
     {% set input = { type: null,placeholder: "question.input.place_holder.observation",validator: "question.input.validator.observation" }|resolve_options(options.input,{ required: ["type"],allowedValues: { type: [null,"textarea"] } }) %}
 
@@ -240,12 +240,13 @@
     {% set id_token = random() %}
     {% set formId = "form_action_"~id %}
     {% set buttonId = "btn_action_"~id %}
+    {% set extraId = "extra_"~id %}
     {#    Colocar el formulario de la accion con confirmacion#}
     <form method="POST" action="{{ options.action }}" id="{{ formId }}">
         <input type="hidden" name="_method" value="POST">
         <input type="hidden" name="_token" value="{{ csrf_token('action-'~id_token~ options.entity.id) }}">
         <input type="hidden" name="_check_token" value="{{ id_token }}">
-        <input type="hidden" name="_extra" value="">
+        <input type="hidden" id="{{ extraId }}" name="{{ options.extra_name }}" value="{{ options.extra_value }}">
     </form>
     {{ button({
             label: options.label,
@@ -276,7 +277,8 @@
                     {% endif %}
                 }).then((result) => {
                     if (result.value) {
-                        $('#{{ formId }} input[name=_extra]').val(result.value);
+{#                        $('#{{ formId }} input[name=_extra]').val(result.value);#}
+                        $('#{{ formId }} input[id={{ extraId }}]').val(result.value);
                         $("#{{ formId }}").submit();
                     }
                 });
