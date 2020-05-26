@@ -3,9 +3,9 @@
 {% macro show_actions(params) %}
     {% import '@SFAdminLTE3/default/buttons.html.twig' as buttons %}
 
-    {% set options = params|resolve_options(params,{ required: ["action_index","action_edit","action_delete","entity"] }) %}
+    {% set options = params|resolve_options(params,{ required: ["action_index","action_edit","action_delete","entity","role_index"] }) %}
 
-    {{ buttons.return_to_list({href: options.action_index}) }}
+    {{ buttons.return_to_list({href: options.action_index,role: options.role_index}) }}
     {{ buttons.delete({ entity: options.entity, action: options.action_delete }) }}
     {{ buttons.edit({href: options.action_edit,entity: options.entity }) }}
 {% endmacro show_actions %}
@@ -14,63 +14,47 @@
 {% macro new_actions(params) %}
     {% import '@SFAdminLTE3/default/buttons.html.twig' as buttons %}
 
-    {% set options = params|resolve_options(params,{ required: ["action_index"] }) %}
+    {% set options = params|resolve_options(params,{ required: ["action_index","role_index","role_new"] }) %}
 
-    {{ buttons.return_to_list({href: options.action_index}) }}
-    {{ buttons.save_new() }}
-    {{ buttons.save_and_close({action: options.action_index }) }}
+    {{ buttons.return_to_list({href: options.action_index,role: options.role_index}) }}
+    {{ buttons.save_new({role:options.role_new}) }}
+    {{ buttons.save_and_close({action: options.action_index,role:options.role_new }) }}
 {% endmacro new_actions %}
 
 {#Botones estandar de edicion#}
 {% macro edit_actions(params) %}
     {% import '@SFAdminLTE3/default/buttons.html.twig' as buttons %}
 
-    {% set options = params|resolve_options(params,{ required: ["action_index","action_delete","action_show","entity"] }) %}
+    {% set options = params|resolve_options(params,{ required: ["action_index","action_delete","action_show","entity","role_index"] }) %}
 
-    {{ buttons.return_to_list({href: options.action_index}) }}
+    {{ buttons.return_to_list({href: options.action_index,role: options.role_index}) }}
     {{ buttons.a({
         label: "button.list.show",
         href: options.action_show,
         class: "btn btn-link btn-sm",
         icon: "fas fa-eye",
-        icon_separator: "mr-1"
+        icon_separator: "mr-1",
+        role: options.role_show
         }) 
     }}
-    {{ buttons.delete({ entity: options.entity, action: options.action_delete }) }}
+    {{ buttons.delete({ entity: options.entity, action: options.action_delete}) }}
 
-    {{ buttons.save() }}
-    {{ buttons.save_and_close({action: options.action_index }) }}
-    {#<div class="btn-group">
-        <button type="button" class="btn btn-primary"><i class="fas fa-save mr-2"></i>Guardar</button>
-        <button type="button" class="btn btn-primary dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
-            <span class="sr-only">Toggle Dropdown</span>
-            <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-1px, 37px, 0px);">
-                <a class="dropdown-item" href="#">
-                    <i class="fas fa-save mr-1 mr-2"></i>Guardar
-                </a>
-                <a class="dropdown-item" href="#"><i class="fas fa-save mr-1 mr-2"></i><i class="fas fa-list mr-2"></i>Guardar y cerrar</a>
-                <a class="dropdown-item" href="#">Something else here</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Ver</a>
-            </div>
-        </button>
-    </div>#}
-
-
-
+    {{ buttons.save({role: {attributes: "EDIT",subject:options.entity } }) }}
+    {{ buttons.save_and_close({action: options.action_index,role: {attributes: "EDIT", subject: options.entity} }) }}
 {% endmacro edit_actions %}
 
 {# Botones de lista #}
 {% macro list_actions(params) %}
     {% from '@SFAdminLTE3/default/buttons.html.twig' import a as a %}
-    {% set options = params|resolve_options(params,{ required: ["action_show","action_edit","entity"] }) %}
+    {% set options = {}|resolve_options(params,{ required: ["action_show","action_edit","entity"] }) %}
 
     {{ a({
         label: "button.list.show",
         href: options.action_show,
         class: "btn btn-link btn-sm",
         icon: "fas fa-eye",
-        icon_separator: "mr-1"
+        icon_separator: "mr-1",
+        role: {attributes: "SHOW",subject:options.entity },
         }) 
     }}
     {{ a({
@@ -78,7 +62,8 @@
         href: options.action_edit,
         class: "btn btn-link btn-sm",
         icon: "fas fa-edit",
-        icon_separator: "mr-1"
+        icon_separator: "mr-1",
+        role: {attributes: "EDIT",subject:options.entity },
         }) 
     }}
 {% endmacro list_actions %}
@@ -86,7 +71,7 @@
 {# Boton de nuevo elemento #}
 {% macro new(params) %}
     {% from '@SFAdminLTE3/default/buttons.html.twig' import save as save %}
-    {% set options = {label: "button.new",class: "btn btn-primary" }|resolve_options(params,{ required: ["href","label","class"] }) %}
+    {% set options = {label: "button.new",class: "btn btn-primary" }|resolve_options(params,{ required: ["href","label","class","role"] }) %}
 
     {% from '@SFAdminLTE3/default/buttons.html.twig' import a as a %}
     {{ a({
@@ -94,19 +79,21 @@
         href: options.href,
         class: options.class,
         icon: "fas fa-plus",
+        role: options.role,
         }) 
     }}
 {% endmacro new %}
 
 {# Boton de guardado de un nuevo elemento #}
-{% macro save_new() %}
+{% macro save_new(params) %}
+    {% set options = {}|resolve_options(params,{ required: ["role"] }) %}
     {% from '@SFAdminLTE3/default/buttons.html.twig' import save as save %}
-    {{ save({uri: constant('App\\Controller\\BaseController::ACTION_SAVE_NEW_VALUE')}) }}
+    {{ save({uri: constant('App\\Controller\\BaseController::ACTION_SAVE_NEW_VALUE'),role: options.role }) }}
 {% endmacro save_new %}
 
 {# Boton de guardar #}
 {% macro save(params) %}
-    {% set options = {uri: app.request.requestUri}|resolve_options(params,{ required: ["uri"] }) %}
+    {% set options = {uri: app.request.requestUri}|resolve_options(params,{ required: ["uri","role"] }) %}
     {% from '@SFAdminLTE3/default/buttons.html.twig' import button as button %}
     {{ button({
         label: "button.save",
@@ -126,14 +113,14 @@
         class: "btn btn-primary",
         icon: "fas fa-edit",
         href: options.href,
-        permission: options.entity.canEdit(),
+        role: {attributes: "EDIT", subject: options.entity},
     } %}
     {{ a(params) }}
 {% endmacro edit %}
 
 {# Boton de guardar y cerrar #}
 {% macro save_and_close(params) %}
-    {% set options = {}|resolve_options(params,{ required: ["action"] }) %}
+    {% set options = {}|resolve_options(params,{ required: ["action","role"] }) %}
 
     {% from '@SFAdminLTE3/default/buttons.html.twig' import button as button %}
 
@@ -143,6 +130,7 @@
         type: "submit",
         icon: "fas fa-list",
         icon_prepend: "fas fa-save mr-1",
+        role: options.role,
         attr: { form: "form_main",name:constant('App\\Controller\\BaseController::ACTION_SAVE'), value: options.action },
     }) }}
 
@@ -173,17 +161,19 @@
 {# Boton de elimiar con formulario con proteccion csrf #}
 {% macro delete(params) %}
     {% set options = {}|resolve_options(params,{ required: ["action","entity"] }) %}
+    {% set role = { attributes: "DELETE",subject: options.entity,message: null }|resolve_options({},{ required: ["attributes","subject"] }) %}
 
     {% from '@SFAdminLTE3/default/buttons.html.twig' import button as button %}
 
     {% set id = random() %}
     {% set formId = "form_delete_"~id %}
     {% set buttonId = "btn_delete_"~id %}
-    {% if options.entity.canDelete %}
+    {% if role.attributes is null or is_granted(role.attributes,role.subject) %}
         {#    Colocar el formulario de eliminar con confirmacion#}
         <form method="POST" action="{{ options.action }}" id="{{ formId }}">
             <input type="hidden" name="_method" value="DELETE">
             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ options.entity.id) }}">
+            <input type="hidden" name="_referer" value="{{ app.request.requestUri }}">
         </form>
         {{ button({
             label: "button.delete",
@@ -246,6 +236,7 @@
         <input type="hidden" name="_method" value="POST">
         <input type="hidden" name="_token" value="{{ csrf_token('action-'~id_token~ options.entity.id) }}">
         <input type="hidden" name="_check_token" value="{{ id_token }}">
+        <input type="hidden" name="_referer" value="{{ app.request.requestUri }}">
         <input type="hidden" id="{{ extraId }}" name="{{ options.extra_name }}" value="{{ options.extra_value }}">
     </form>
     {{ button({
@@ -266,45 +257,49 @@
                     cancelButtonColor: '#d33',
                     confirmButtonText: '{{ question.confirm_button_text|trans }}',
                     cancelButtonText: '{{ question.cancel_button_text|trans }}',
-                    {% if input.type is not null %}
-                    input: '{{ input.type }}',
-                    inputPlaceholder: '{{ input.placeholder|trans }}',
-                    inputValidator: (value) => {
-                        if (!value) {
-                            return '{{ input.validator|trans }}'
+        {% if input.type is not null %}
+                        input: '{{ input.type }}',
+                        inputPlaceholder: '{{ input.placeholder|trans }}',
+                        inputValidator: (value) => {
+                            if (!value) {
+                                return '{{ input.validator|trans }}'
+                            }
                         }
-                    }
-                    {% endif %}
-                }).then((result) => {
-                    if (result.value) {
-{#                        $('#{{ formId }} input[name=_extra]').val(result.value);#}
-                        $('#{{ formId }} input[id={{ extraId }}]').val(result.value);
-                        $("#{{ formId }}").submit();
-                    }
+        {% endif %}
+                    }).then((result) => {
+                        if (result.value) {
+        {#                        $('#{{ formId }} input[name=_extra]').val(result.value);#}
+                            $('#{{ formId }} input[id={{ extraId }}]').val(result.value);
+                            $("#{{ formId }}").submit();
+                        }
+                    });
                 });
             });
-        });
     </script>
-
-
 {% endmacro action %}
 
 {# Constructor  de "button" generico #}
 {% macro button(params) %}
-    {% set defaults = { label: null,icon: null,icon_prepend:null, class: 'btn btn-primary',type: null,attr: {} } %}
+    {% set defaults = { label: null,icon: null,icon_prepend:null, class: 'btn btn-primary',type: null,attr: {},role:{} } %}
     {% set options = defaults|resolve_options(params,{ allowedValues: { type: ['submit',null] } }) %}
+    {% set role = { attributes: null,subject: null,message: null }|resolve_options(options.role,{ required: ["attributes","subject"] }) %}
 
     {% set attr = options.attr %}
     {% set attr = attr|merge({class: options.class}) %}
     {% if options.type %}
         {% set attr = attr|merge({type: options.type}) %}
     {% endif %}
-    <button {{ block('attributes') }}>{% if options.icon_prepend %}<i class="{{ options.icon_prepend }} mr-2"></i>{% endif %}<i class="{{ options.icon }} mr-2"></i>{{ options.label|trans }}</button>
-        {% endmacro button %}
+    {% if role.attributes is null or is_granted(role.attributes,role.subject) %}
+        <button {{ block('attributes') }}>{% if options.icon_prepend %}<i class="{{ options.icon_prepend }} mr-2"></i>{% endif %}<i class="{{ options.icon }} mr-2"></i>{{ options.label|trans }}</button>
+    {% else %}
+{#        TODO deshabilitar boton si tiene texto o desaparecer#}
+    {% endif %}
+{% endmacro button %}
 
 {# Constructor de "a" generico #}
 {% macro a(params) %}
-    {% set defaults = { label: null,icon: null,icon_prepend:null, class: 'btn btn-primary',icon_separator: "mr-2",target: null,attr: {},question: { title: null, text: null},permission: true } %}
+    {% set defaults = { label: null,icon: null,icon_prepend:null, class: 'btn btn-primary',icon_separator: "mr-2",target: null,attr: {},question: { title: null, text: null},
+        role: {} } %}
     {% set options = defaults|resolve_options(params,{ required: ["href"] }) %}
 
     {% set id = random() %}
@@ -313,8 +308,11 @@
     {% set attr = options.attr %}
 
     {% set question = { title: ("question.title"|trans),confirm_button_text: "question.button.yes",cancel_button_text: "question.button.no" }|resolve_options(options.question,{ required: ["text"] }) %}
-    {% if options.permission %}
-        {% set attr = attr|merge({class: options.class, href: options.href, target: options.target,id: aId}) %}
+    {% set role = { attributes: null,subject: null,message: null }|resolve_options(options.role,{ required: ["attributes","subject"] }) %}
+
+    {% if role.attributes is null or is_granted(role.attributes,role.subject) %}
+        {% set href = build_with_referer(options.href,app.request.requestUri) %}
+        {% set attr = attr|merge({class: options.class, href: href, target: options.target,id: aId}) %}
         <a {{ block('attributes') }}>{% if options.icon_prepend %}<i class="{{ options.icon_prepend }} {{ options.icon_separator }}"></i>{% endif %}<i class="{{ options.icon }} {{ options.icon_separator }}"></i>{{ options.label|trans }}</a>
                 {% if question.text is not null %}
             <script>
@@ -340,7 +338,11 @@
             </script>
         {% endif %}
     {% else %}
-        {% set attr = attr|merge({class: options.class ~ " disabled", href: ""}) %}
-        <a {{ block('attributes') }}>{% if options.icon_prepend %}<i class="{{ options.icon_prepend }} {{ options.icon_separator }}"></i>{% endif %}<i class="{{ options.icon }} {{ options.icon_separator }}"></i>{{ options.label|trans }}</a>
+        {% if role.message is not null %}
+            {% set attr = attr|merge({class: options.class ~ " disabled", href: ""}) %}
+            <a {{ block('attributes') }}>{% if options.icon_prepend %}<i class="{{ options.icon_prepend }} {{ options.icon_separator }}"></i>{% endif %}<i class="{{ options.icon }} {{ options.icon_separator }}"></i>{{ options.label|trans }}</a>
+        {% else %}
+        {#        TODO deshabilitar boton si tiene texto o desaparecer#}
+        {% endif %}
     {% endif %}
 {% endmacro a %}
