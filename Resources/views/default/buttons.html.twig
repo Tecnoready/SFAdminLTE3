@@ -214,9 +214,10 @@
 
 {# Boton de accion con formulario con proteccion csrf #}
 {% macro action(params) %}
-    {% set options = { class: "btn btn-primary",icon: null,input: {},extra_name: "_extra",extra_value: null }|resolve_options(params,{ required: ["action","entity","label","question"] }) %}
+    {% set options = { class: "btn btn-primary",icon: null,input: {},extra_name: "_extra",extra_value: null }|resolve_options(params,{ required: ["action","entity","label","question","role"] }) %}
     {% set question = { title: ("question.title"|trans),confirm_button_text: "question.button.yes",cancel_button_text: "question.button.no" }|resolve_options(options.question,{ required: ["text"] }) %}
     {% set input = { type: null,placeholder: "question.input.place_holder.observation",validator: "question.input.validator.observation" }|resolve_options(options.input,{ required: ["type"],allowedValues: { type: [null,"textarea"] } }) %}
+    {% set role = { attributes: null,subject: null,message: null }|resolve_options(options.role,{ required: ["attributes","subject"] }) %}
 
     {% from '@SFAdminLTE3/default/buttons.html.twig' import button as button %}
 
@@ -226,56 +227,60 @@
             {% set icon = "fas fa-times-circle" %}
         {% endif %}
     {% endif %}
-    {% set id = random() %}
-    {% set id_token = random() %}
-    {% set formId = "form_action_"~id %}
-    {% set buttonId = "btn_action_"~id %}
-    {% set extraId = "extra_"~id %}
-    {#    Colocar el formulario de la accion con confirmacion#}
-    <form method="POST" action="{{ options.action }}" id="{{ formId }}">
-        <input type="hidden" name="_method" value="POST">
-        <input type="hidden" name="_token" value="{{ csrf_token('action-'~id_token~ options.entity.id) }}">
-        <input type="hidden" name="_check_token" value="{{ id_token }}">
-        <input type="hidden" name="_referer" value="{{ app.request.requestUri }}">
-        <input type="hidden" id="{{ extraId }}" name="{{ options.extra_name }}" value="{{ options.extra_value }}">
-    </form>
-    {{ button({
-            label: options.label,
-            class: options.class,
-            icon: icon,
-            attr: {id: buttonId}
-        }) }}
-    <script>
-        document.addEventListener("DOMContentLoaded", function (event) {
-            $("#{{ buttonId }}").on("click", function () {
-                Swal.fire({
-                    title: '{{ question.title }}',
-                    text: "{{ question.text }}",
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: '{{ question.confirm_button_text|trans }}',
-                    cancelButtonText: '{{ question.cancel_button_text|trans }}',
-        {% if input.type is not null %}
-                        input: '{{ input.type }}',
-                        inputPlaceholder: '{{ input.placeholder|trans }}',
-                        inputValidator: (value) => {
-                            if (!value) {
-                                return '{{ input.validator|trans }}'
+    {% if role.attributes is null or is_granted(role.attributes,role.subject) %}
+        {% set id = random() %}
+        {% set id_token = random() %}
+        {% set formId = "form_action_"~id %}
+        {% set buttonId = "btn_action_"~id %}
+        {% set extraId = "extra_"~id %}
+        {#    Colocar el formulario de la accion con confirmacion#}
+        <form method="POST" action="{{ options.action }}" id="{{ formId }}">
+            <input type="hidden" name="_method" value="POST">
+            <input type="hidden" name="_token" value="{{ csrf_token('action-'~id_token~ options.entity.id) }}">
+            <input type="hidden" name="_check_token" value="{{ id_token }}">
+            <input type="hidden" name="_referer" value="{{ app.request.requestUri }}">
+            <input type="hidden" id="{{ extraId }}" name="{{ options.extra_name }}" value="{{ options.extra_value }}">
+        </form>
+        {{ button({
+                label: options.label,
+                class: options.class,
+                icon: icon,
+                attr: {id: buttonId}
+            }) }}
+        <script>
+            document.addEventListener("DOMContentLoaded", function (event) {
+                $("#{{ buttonId }}").on("click", function () {
+                    Swal.fire({
+                        title: '{{ question.title }}',
+                        text: "{{ question.text }}",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: '{{ question.confirm_button_text|trans }}',
+                        cancelButtonText: '{{ question.cancel_button_text|trans }}',
+            {% if input.type is not null %}
+                            input: '{{ input.type }}',
+                            inputPlaceholder: '{{ input.placeholder|trans }}',
+                            inputValidator: (value) => {
+                                if (!value) {
+                                    return '{{ input.validator|trans }}'
+                                }
                             }
-                        }
-        {% endif %}
-                    }).then((result) => {
-                        if (result.value) {
-        {#                        $('#{{ formId }} input[name=_extra]').val(result.value);#}
-                            $('#{{ formId }} input[id={{ extraId }}]').val(result.value);
-                            $("#{{ formId }}").submit();
-                        }
+            {% endif %}
+                        }).then((result) => {
+                            if (result.value) {
+            {#                        $('#{{ formId }} input[name=_extra]').val(result.value);#}
+                                $('#{{ formId }} input[id={{ extraId }}]').val(result.value);
+                                $("#{{ formId }}").submit();
+                            }
+                        });
                     });
                 });
-            });
-    </script>
+        </script>
+    {% else %}
+        {#        TODO deshabilitar boton si tiene texto o desaparecer#}
+    {% endif %}
 {% endmacro action %}
 
 {# Constructor  de "button" generico #}
