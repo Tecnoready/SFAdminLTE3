@@ -283,19 +283,63 @@
     {% endif %}
 {% endmacro action %}
 
+
 {# Constructor  de "button" generico #}
 {% macro button(params) %}
-    {% set defaults = { label: null,icon: null,icon_prepend:null, class: 'btn btn-primary',type: null,attr: {},role:{} } %}
-    {% set options = defaults|resolve_options(params,{ allowedValues: { type: ['submit',null] } }) %}
+    {% set defaults = { icon: null,icon_prepend:null, class: 'btn btn-primary',type: null,attr: {},role:{},popup:{} } %}
+    {% set options = defaults|resolve_options(params,{ allowedValues: { type: ['submit',null] },required: ["label"] }) %}
     {% set role = { attributes: null,subject: null,message: null }|resolve_options(options.role,{ required: ["attributes","subject"] }) %}
+    {% set popup = { uri: null,loading_text: "popup.loading" }|resolve_options(options.popup,{ }) %}
 
+    {% set id = random() %}
+    {% set btnId = "btn_"~id %}
     {% set attr = options.attr %}
-    {% set attr = attr|merge({class: options.class}) %}
+    {% set attr = attr|merge({class: options.class,id: btnId}) %}
     {% if options.type %}
         {% set attr = attr|merge({type: options.type}) %}
     {% endif %}
     {% if role.attributes is null or is_granted(role.attributes,role.subject) %}
         <button {{ block('attributes') }}>{% if options.icon_prepend %}<i class="{{ options.icon_prepend }} mr-2"></i>{% endif %}<i class="{{ options.icon }} mr-2"></i>{{ options.label|trans }}</button>
+        {% if popup.uri is not null %}
+            <script>
+                document.addEventListener("DOMContentLoaded", function (event) {
+                    $("#{{ btnId }}").on("click", function () {
+                        const swal = Swal.fire({
+                            title: '{{ popup.loading_text|trans }}',
+                            showCancelButton: true,
+                            onBeforeOpen: (p) => {
+                              Swal.showLoading();
+                              //Swal.hideLoading();
+                              //Log(p);
+                              var jqxhr = $.get( "{{ popup.uri }}", function(data) {
+                                  Swal.hideLoading();
+                                  Swal.update({
+                                      title: null,
+                                      html: data,
+                                  });
+                              })
+                                .done(function() {
+                                  //alert( "second success" );
+                                })
+                                .fail(function() {
+                                  //alert( "error" );
+                                    Swal.hideLoading();
+                                })
+                                .always(function() {
+                                  //alert( "finished" );
+                                });
+                            },
+                            onClose: () => {
+                              
+                            }
+                          }).then((result) => {
+                            /* Read more about handling dismissals below */
+                          });
+                        return false;
+                    });
+                });
+            </script>
+        {% endif %}
     {% else %}
 {#        TODO deshabilitar boton si tiene texto o desaparecer#}
     {% endif %}

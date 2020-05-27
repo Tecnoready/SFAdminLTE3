@@ -1,0 +1,60 @@
+{% use 'bootstrap_4_layout.html.twig' %}
+
+{% block entity_widget %}
+    {{ block("choice_widget") }}
+    <script>
+        document.addEventListener("DOMContentLoaded", function (event) {
+            //console.log("DOM fully loaded and parsed");
+            $('#{{ form.vars.id }}').select2({
+                theme: 'bootstrap4'
+            });
+        });
+    </script>
+{% endblock entity_widget %}
+
+{% block date_widget %}
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+        </div>
+        {{ parent() }}
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function (event) {
+            //console.log("DOM fully loaded and parsed");
+            $('#{{ form.vars.id }}').inputmask({'alias': 'datetime', 'inputFormat': 'dd/mm/yyyy'});
+        });
+    </script>
+{% endblock %}
+
+{% block time_widget %}
+    {% set target = form.vars.id~"_tg" %}
+    <div class="input-group date" id="{{ target }}" data-target-input="nearest">
+        {{ parent() }}
+        <div class="input-group-append" data-target="#{{ target }}" data-toggle="datetimepicker">
+            <div class="input-group-text"><i class="far fa-clock"></i></div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function (event) {
+            $('#{{ target }}').datetimepicker({
+                format: 'LT'
+            });
+        });
+    </script>
+{% endblock time_widget %}
+
+{% block tel_widget %}
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+        </div>
+        {#        <input type="text" class="form-control" data-inputmask='"mask": "(999) 999-9999"' data-mask>#}
+        {{ parent() }}
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function (event) {
+            $('#{{ form.vars.id }}').inputmask({'mask': '+(999) 99 999-9999'});
+        });
+    </script>
+{% endblock tel_widget %}
