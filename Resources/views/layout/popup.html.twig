@@ -1,0 +1,9 @@
+{% set popup = {width: "70%"}|resolve_options(popup|default({}),{  }) %}
+
+{% block content '' %}
+
+<style>
+    .swal2-popup {
+        width: {{ popup.width }};
+    }
+</style>
