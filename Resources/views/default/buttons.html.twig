@@ -289,63 +289,89 @@
     {% set defaults = { icon: null,icon_prepend:null, class: 'btn btn-primary',type: null,attr: {},role:{},popup:{} } %}
     {% set options = defaults|resolve_options(params,{ allowedValues: { type: ['submit',null] },required: ["label"] }) %}
     {% set role = { attributes: null,subject: null,message: null }|resolve_options(options.role,{ required: ["attributes","subject"] }) %}
-    {% set popup = { uri: null,loading_text: "popup.loading" }|resolve_options(options.popup,{ }) %}
+    {% set popup = { uri: null,loading_text: "popup.loading",confirm_button_text: "popup.button.confirm",cancel_button_text: "popup.button.cancel" }|resolve_options(options.popup,{ }) %}
 
     {% set id = random() %}
     {% set btnId = "btn_"~id %}
     {% set attr = options.attr %}
-    {% set attr = attr|merge({class: options.class,id: btnId}) %}
+    {% set attr = {class: options.class,id: btnId}|merge(attr) %}
     {% if options.type %}
         {% set attr = attr|merge({type: options.type}) %}
     {% endif %}
     {% if role.attributes is null or is_granted(role.attributes,role.subject) %}
         <button {{ block('attributes') }}>{% if options.icon_prepend %}<i class="{{ options.icon_prepend }} mr-2"></i>{% endif %}<i class="{{ options.icon }} mr-2"></i>{{ options.label|trans }}</button>
-        {% if popup.uri is not null %}
+                {% if popup.uri is not null %}
             <script>
                 document.addEventListener("DOMContentLoaded", function (event) {
-                    $("#{{ btnId }}").on("click", function () {
-                        const swal = Swal.fire({
-                            title: '{{ popup.loading_text|trans }}',
-                            showCancelButton: true,
-                            onBeforeOpen: (p) => {
-                              Swal.showLoading();
-                              //Swal.hideLoading();
-                              //Log(p);
-                              var jqxhr = $.get( "{{ popup.uri }}", function(data) {
-                                  Swal.hideLoading();
-                                  Swal.update({
-                                      title: null,
-                                      html: "...",
-                                  });
-                                  //Log(Swal.getContent());
-                                  //id=swal2-content
-                                  $("#swal2-content").html(data);
-                                  //Swal.getContent().innerHTML = data;
-                              })
-                                .done(function() {
-                                  //alert( "second success" );
-                                })
-                                .fail(function() {
-                                  //alert( "error" );
-                                    Swal.hideLoading();
-                                })
-                                .always(function() {
-                                  //alert( "finished" );
+                {% set uri = build_with_referer(popup.uri,app.request.requestUri) %}
+                        $("#{{ btnId }}").on("click", function () {
+                            Swal.confirmButtonText = function (text) {
+                                var confirmButton = $(Swal.getActions()).find(".swal2-confirm");
+                                if (confirmButton) {
+                                    confirmButton[0].innerHTML = text;
+                                }
+                            };
+                            Swal.updateContent = function (data) {
+                                Swal.update({
+                                    title: null,
+                                    html: "...",
+                                    showConfirmButton: true,
+                                    showCancelButton: true,
                                 });
-                            },
-                            onClose: () => {
-                              
-                            }
-                          }).then((result) => {
-                            /* Read more about handling dismissals below */
-                          });
-                        return false;
+                                if (Swal.isLoading()) {
+                                    Swal.hideLoading();
+                                }
+                                $("#swal2-content").html(data);
+                            };
+                            const swal = Swal.fire({
+                                title: '{{ popup.loading_text|trans }}',
+                                showConfirmButton: false,
+                                showCancelButton: false,
+                                confirmButtonColor: '#3085d6',
+                                //cancelButtonColor: '#d33',
+                                confirmButtonText: '{{ popup.confirm_button_text|trans }}',
+                                cancelButtonText: '{{ popup.cancel_button_text|trans }}',
+                                showLoaderOnConfirm: true,
+                                preConfirm: function (p) {
+                                    if (Swal.onConfirm) {
+                                        var promise = Swal.onConfirm(p);
+                                        Swal.update({
+                                            title: '{{ popup.loading_text|trans }}',
+                                            html: null,
+                                            showConfirmButton: true,
+                                            showCancelButton: false,
+                                        });
+                                        Swal.showLoading();
+                                        return promise;
+                                    }
+                                    return true;
+                                },
+                                onBeforeOpen: (p) => {
+                                    Swal.showLoading();
+                                    $.get("{{ uri }}", function (data) {
+                                        Swal.updateContent(data);
+                                    })
+                                    .always(function () {
+                                        if (Swal.isLoading()) {
+                                            Swal.hideLoading();
+                                        }
+                                    });
+                                }
+                            }).then((result) => {
+                                /* Read more about handling dismissals below */
+                                //Log(result);
+                                if (Swal.onClose) {
+                                    Swal.onClose(result);
+                                    Swal.onClose = null;
+                                }
+                            });
+                            return false;
+                        });
                     });
-                });
             </script>
         {% endif %}
     {% else %}
-{#        TODO deshabilitar boton si tiene texto o desaparecer#}
+        {#        TODO deshabilitar boton si tiene texto o desaparecer#}
     {% endif %}
 {% endmacro button %}
 
@@ -395,7 +421,7 @@
             {% set attr = attr|merge({class: options.class ~ " disabled", href: ""}) %}
             <a {{ block('attributes') }}>{% if options.icon_prepend %}<i class="{{ options.icon_prepend }} {{ options.icon_separator }}"></i>{% endif %}<i class="{{ options.icon }} {{ options.icon_separator }}"></i>{{ options.label|trans }}</a>
         {% else %}
-        {#        TODO deshabilitar boton si tiene texto o desaparecer#}
+            {#        TODO deshabilitar boton si tiene texto o desaparecer#}
         {% endif %}
     {% endif %}
 {% endmacro a %}
