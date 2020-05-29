@@ -33,22 +33,39 @@
 
 {# Construye una barra de progreso #}
 {% macro progress_bar(params) %}
-    {% set defaults = { size: null,type:"primary",class: "progress-bar-striped active",value_min:0,value_max:100,now:0,of:0 } %}
-    {% set options = defaults|resolve_options(params,{ allowedValues: { size: [null,'sm','xs','xxs'],type:["primary","success","warning","danger"] } }) %}
+    {% set defaults = { size: null,type:"auto",class: "progress-bar-striped active",value_min:0,value_max:100,now:0,of:0,auto_range:{} } %}
+    {% set options = defaults|resolve_options(params,{ allowedValues: { size: [null,'sm','xs','xxs'],type:["primary","success","warning","danger","auto"] } }) %}
+    {% set auto_range = { danger: [0..20],warning:[21..60],primary:[61..90],success:[91..100] }|resolve_options(options.auto_range) %}
+    
+    {% set value_now = options.now %}
+    {% if options.of > 0 %}
+        {% set value_now = (options.now / options.of) * 100 %}
+    {% endif %}
+{#    {% set value_now = value_now|number_format(2) %}#}
+    {% set value_now = value_now|round(0,'floor') %}
     
     {% set class = ["progress",options.class] %}
     {% if options.size %}
         {% set class = class|merge(["progress-"~options.size]) %}
     {% endif %}
+    
     {% set attr = {class: class|join(' ') } %}
+    
+    {% set type = options.type %}
+    {% if options.type == "auto" %}
+{#        {% set value_formatted = value_now|round(0,'floor') %}#}
+        {% set break = false %}
+        {% for key,range in auto_range if not break %}
+            {% if value_now in range[0] %}
+                {% set type = key %}
+                {% set break = true %}
+            {% endif %}
+        {% endfor %}
+{#        {{ value_formatted }} - {{ value_now }} - {{ type }}#}
+    {% endif %}
     <div {{ block('attributes') }}>
-        {% set class = ["progress-bar","progress-bar-striped","bg-"~options.type] %}
+        {% set class = ["progress-bar","progress-bar-striped","bg-"~type] %}
         {% set attr = {class: class|join(' '),role:"progressbar" } %}
-        
-        {% set value_now = options.now %}
-        {% if options.of > 0 %}
-            {% set value_now = (options.now / options.of) * 100%}
-        {% endif %}
         
         {% set tooltip = {title: value_now~"%"}|resolve_tooltip %}
         {% set attr = attr|merge(tooltip) %}
