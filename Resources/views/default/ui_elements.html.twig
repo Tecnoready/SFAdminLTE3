@@ -2,7 +2,7 @@
 
 {% macro flashes() %}
     {% if app.request.hasPreviousSession %}
-        {% from '@SFAdminLTE3/default/macros.html.twig' import alert as alert %}
+        {% from '@SFAdminLTE3/default/ui_elements.html.twig' import alert as alert %}
 
         {% for type, messages in app.session.flashbag.all() %}
             {% for message in messages %}
