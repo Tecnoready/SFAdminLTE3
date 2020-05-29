@@ -1,5 +1,6 @@
 {% extends "@SFAdminLTE3/default/base_macros.html.twig" %}
 
+{# Flashes de la aplicacion #}
 {% macro flashes() %}
     {% if app.request.hasPreviousSession %}
         {% from '@SFAdminLTE3/default/ui_elements.html.twig' import alert as alert %}
@@ -14,7 +15,7 @@
 
 {# Genera una alerta html #}
 {% macro alert(content,params) %}
-    {% set defaults = { dismissible: true,title: ('title.alert'|trans), type: 'success' } %}
+    {% set defaults = { dismissible: true,title: "title.alert",title_trans_parameters:{},content_trans_parameters:{}, type: 'success' } %}
     {% set options = defaults|resolve_options(params,{ allowedValues: { type: ['success','danger','warning','info'] } }) %}
     {% set icons = { danger: 'icon fas fa-ban', success: 'icon fas fa-check',warning: 'icon fas fa-exclamation-triangle',info: 'icon fas fa-info'  } %}
 
@@ -22,8 +23,8 @@
         {% if options.dismissible %}
             <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button>
         {% endif %}
-        <h5><i class='{{ icons[options.type] }}'></i> {{ options.title }} </h5>
-        {{ content }}
+        <h5><i class='{{ icons[options.type] }}'></i> {{ options.title|trans(options.title_trans_parameters) }} </h5>
+        {{ content|trans(options.content_trans_parameters) }}
     </div>
 {% endmacro alert %}
 
