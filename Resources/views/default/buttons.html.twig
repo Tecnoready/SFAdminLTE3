@@ -375,7 +375,8 @@
                                     //Log(textStatus);
                                     Log(jqXHR.status);
                                     Swal.updateContent(response);
-                                    if (jqXHR.status == 200) {
+{#                                    HTTP_RESET_CONTENT#}
+                                    if (jqXHR.status == 205) {
                                         resolvePromise(response);
                                         Swal.onAfterClose = function () {
                                             location.reload();
@@ -386,6 +387,7 @@
                                     //Log(textStatus);
                                     //Log(jqXHR.responseText);
                                     //Log(errorThrown);
+{#                                    HTTP_BAD_REQUEST#}
                                     if (jqXHR.status == 400) {
                                         Swal.updateContent(jqXHR.responseText);
                                     } else {
