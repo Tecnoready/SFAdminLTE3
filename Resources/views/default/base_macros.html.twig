@@ -1,4 +1,10 @@
 {% block attributes -%}
+    {% if translation_domain is not defined %}
+        {% set translation_domain = "messages" %}
+    {% endif %}
+    {% if attr_translation_parameters is not defined %}
+        {% set attr_translation_parameters = {} %}
+    {% endif %}
     {%- for attrname, attrvalue in attr -%}
         {{- " " -}}
         {%- if attrname in ['placeholder', 'title'] -%}
