@@ -305,6 +305,21 @@
                 document.addEventListener("DOMContentLoaded", function (event) {
                 {% set uri = build_with_referer(popup.uri,app.request.requestUri) %}
                         $("#{{ btnId }}").on("click", function () {
+                            var hide = function (elem) {
+                                //Log("display: "+elem.css("display"));
+                                //Log(elem);
+                                elem.data("old_display", elem.css("display"));
+                                elem.css("opacity", '');
+                                elem.css("display", 'none');
+                            };
+                            var show = function (elem) {
+                                //Log("old_display: "+elem.data("old_display"));
+                                var oldDisplay = elem.data("old_display");
+                                if (oldDisplay) {
+                                    elem.css("opacity", '');
+                                    elem.css("display", oldDisplay);
+                                }
+                            };
                             Swal.confirmButtonText = function (text) {
                                 var confirmButton = $(Swal.getActions()).find(".swal2-confirm");
                                 if (confirmButton) {
@@ -313,35 +328,106 @@
                             };
                             Swal.updateContent = function (data) {
                                 Swal.update({
-                                    title: null,
+                                    //title: null,
                                     html: "...",
                                     showConfirmButton: true,
                                     showCancelButton: true,
                                 });
+                                $("#swal2-content").html(data);
+                            };
+                            Swal.loading = function () {
+                                if (!Swal.isLoading()) {
+                                    Swal.showLoading();
+                                }
+                                show($("#swal2-title"));
+                                hide($("#swal2-content"));
+                                hide($("button.swal2-cancel"));
+                            };
+                            Swal.done = function () {
                                 if (Swal.isLoading()) {
                                     Swal.hideLoading();
                                 }
-                                $("#swal2-content").html(data);
+                                show($("#swal2-content"));
+                                show($("button.swal2-cancel"));
+                                hide($("#swal2-title"));
+
+                            };
+                            Swal.sendAjaxForm = function (idForm) {
+                                var resolvePromise = null;
+                                var rejectPromise = null;
+                                let miPrimeraPromise = new Promise((resolve, reject) => {
+                                    resolvePromise = resolve;
+                                    rejectPromise = reject;
+                                    // Llamamos a resolve(...) cuando lo que estabamos haciendo finaliza con éxito, y reject(...) cuando falla.
+                                });
+                                var post_url = $("#" + idForm).attr("action"); //get form action url
+                                var request_method = $("#" + idForm).attr("method"); //get form GET/POST method
+                                var form_data = new FormData(document.getElementById(idForm)); //Creates new FormData object
+                                $.ajax({
+                                    url: post_url,
+                                    type: request_method,
+                                    data: form_data,
+                                    contentType: false,
+                                    cache: false,
+                                    processData: false
+                                }).done(function (response, textStatus, jqXHR) { //
+                                    //Log(response);
+                                    //Log(textStatus);
+                                    Log(jqXHR.status);
+                                    Swal.updateContent(response);
+                                    if (jqXHR.status == 200) {
+                                        resolvePromise(response);
+                                        Swal.onAfterClose = function () {
+                                            location.reload();
+                                        };
+                                    }
+                                }).fail(function (jqXHR, textStatus, errorThrown) {
+                                    rejectPromise(errorThrown);
+                                    //Log(textStatus);
+                                    //Log(jqXHR.responseText);
+                                    //Log(errorThrown);
+                                    if (jqXHR.status == 400) {
+                                        Swal.updateContent(jqXHR.responseText);
+                                    } else {
+                                        Swal.showValidationMessage(
+                                            'Request failed:'
+                                            );
+                                    }
+                                    //Log(textStatus);
+                                }).always(function () {
+                                    Swal.done();
+                                });
+                                return miPrimeraPromise;
                             };
                             const swal = Swal.fire({
                                 title: '{{ popup.loading_text|trans }}',
                                 showConfirmButton: false,
                                 showCancelButton: false,
+                                allowOutsideClick: false,
                                 confirmButtonColor: '#3085d6',
                                 //cancelButtonColor: '#d33',
                                 confirmButtonText: '{{ popup.confirm_button_text|trans }}',
                                 cancelButtonText: '{{ popup.cancel_button_text|trans }}',
-                                showLoaderOnConfirm: true,
+                                onAfterClose: function () {
+                                    if (Swal.onAfterClose) {
+                                        Swal.onAfterClose();
+                                        Swal.onAfterClose = null;
+                                    }
+                                },
+                                //showLoaderOnConfirm: true,
                                 preConfirm: function (p) {
                                     if (Swal.onConfirm) {
+                                        //Swal.loading();
                                         var promise = Swal.onConfirm(p);
-                                        Swal.update({
-                                            title: '{{ popup.loading_text|trans }}',
-                                            html: null,
-                                            showConfirmButton: true,
-                                            showCancelButton: false,
-                                        });
-                                        Swal.showLoading();
+                                        /*
+                                         Swal.update({
+                                         //title: '{{ popup.loading_text|trans }}',
+                                         html: null,
+                                         showConfirmButton: true,
+                                         showCancelButton: false,
+                                         });
+                                         */
+                                        Swal.loading();
                                         return promise;
                                     }
                                     return true;
@@ -352,14 +438,11 @@
                                         Swal.updateContent(data);
                                     })
                                     .always(function () {
-                                        if (Swal.isLoading()) {
-                                            Swal.hideLoading();
-                                        }
+                                        Swal.done();
                                     });
                                 }
                             }).then((result) => {
                                 /* Read more about handling dismissals below */
-                                //Log(result);
                                 if (Swal.onClose) {
                                     Swal.onClose(result);
                                     Swal.onClose = null;
