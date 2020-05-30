@@ -1,3 +1,9 @@
+{% macro link_object(value,params) %}
+    {% from '@SFAdminLTE3/default/show_fields.html.twig' import field as field %}
+    {% set params = params|merge({ field_type: "string",value:path_object(value),raw:true }) %}
+    {{ field(params) }}
+{% endmacro link_object %}
+
 {% macro integer(params) %}
     {% set options = defaults|resolve_options(params,{ required: ["field_type","value"],allowedValues: { field_type:["integer","string","association","image","datetime","time","boolean"] } }) %}
     {% from '@SFAdminLTE3/default/show_fields.html.twig' import field as field %}
@@ -70,7 +76,7 @@
 {% endmacro boolean %}
 
 {% macro field(params) %}
-    {% set defaults = { label: null,label_parameters:{},help: null,help_parameters:{} } %}
+    {% set defaults = { label: null,label_parameters:{},help: null,help_parameters:{},raw: false } %}
     {% set options = defaults|resolve_options(params,{ required: ["field_type","value"],allowedValues: { field_type:["integer","string","text","association","image","datetime","date","time","boolean"] } }) %}
 
     <div class="form-group field-{{ options.field_type}}">
@@ -82,7 +88,11 @@
                 {% if options.value is null %}
                 <span class="badge badge-secondary">Nulo</span>
                 {% else %}
-                    {{ options.value }}
+                    {% if options.raw %}
+                        {{ options.value|raw }}
+                    {% else %}
+                        {{ options.value }}
+                    {% endif %}
                 {% endif %}
             </div>
             {% if options.help is not null %}

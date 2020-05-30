@@ -1,0 +1,24 @@
+{% extends "layouts/components/common/tab/show.html.twig" %}
+
+{% import '@SFAdminLTE3/default/show_fields.html.twig' as fields %}
+
+{% block tab_body %}
+    <div class="form-horizontal">
+        {{ fields.datetime(entity.createdAt,{
+                            label: "Created at"
+                        }) }}
+        {{ fields.string(entity.createdFromIp,{
+                            label: "Created from ip"
+                        }) }}
+        {{ fields.datetime(entity.updatedAt,{
+                            label: "Updated at"
+                        }) }}
+        {{ fields.string(entity.updatedFromIp,{
+                            label: "Updated from ip"
+                        }) }}
+    </div>
+{% endblock %}
+
+{% block tab_buttons %}
+
+{% endblock %}
