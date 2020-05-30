@@ -1,0 +1,7 @@
+popup.loading: "Cargando, por favor espere..."
+popup.button.cancel: Cancelar
+popup.button.confirm: "Aceptar"
+title.alert.info: 'Información!'
+title.alert.success: 'Correcto!'
+title.alert.danger: 'Error!'
+title.alert.warning: 'Advertencia!'

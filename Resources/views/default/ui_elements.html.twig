@@ -15,15 +15,21 @@
 
 {# Genera una alerta html #}
 {% macro alert(content,params) %}
-    {% set defaults = { dismissible: true,title: "title.alert",title_trans_parameters:{},content_trans_parameters:{}, type: 'success' } %}
+    {% set defaults = { dismissible: true,title: null,title_trans_parameters:{},content_trans_parameters:{}, type: 'success' } %}
     {% set options = defaults|resolve_options(params,{ allowedValues: { type: ['success','danger','warning','info'] } }) %}
     {% set icons = { danger: 'icon fas fa-ban', success: 'icon fas fa-check',warning: 'icon fas fa-exclamation-triangle',info: 'icon fas fa-info'  } %}
-
+    {% set title_defaults = {success: "title.alert.success",danger: "title.alert.danger",warning: "title.alert.warning",info: "title.alert.info"} %}
+    
+    {% set alert_title = options.title %}
+    {% if alert_title is null %}
+        {% set alert_title = title_defaults[options.type] %}
+    {% endif %}
+    
     <div class='alert alert-{{ options.type }} alert-dismissible'>
         {% if options.dismissible %}
             <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button>
         {% endif %}
-        <h5><i class='{{ icons[options.type] }}'></i> {{ options.title|trans(options.title_trans_parameters) }} </h5>
+        <h5><i class='{{ icons[options.type] }}'></i> {{ alert_title|trans(options.title_trans_parameters) }} </h5>
         {{ content|trans(options.content_trans_parameters) }}
     </div>
 {% endmacro alert %}
