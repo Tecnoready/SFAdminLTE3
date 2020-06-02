@@ -1,0 +1,27 @@
+{% extends "base.html.twig" %}
+
+{% block body_root %}
+    <body class="hold-transition login-page">
+        {% if app.request.hasPreviousSession %}
+            {% for type, messages in app.session.flashbag.all() %}
+                {% for message in messages %}
+                    <div class="flash-{{ type }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+
+        <div class="login-box">
+            <div class="login-logo">
+                <a href="#"><b>{{ app_name }}</b></a>
+            </div>
+            <div class="card">
+                <div class="card-body login-card-body">
+                    {% block content '' %}
+                </div>
+            </div>
+        </div>
+    </body>
+{% endblock body_root %}
+

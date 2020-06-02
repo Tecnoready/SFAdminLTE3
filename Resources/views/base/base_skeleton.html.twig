@@ -1,0 +1,19 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+    {% block content %}
+        {{ "block content" }}
+    {% endblock content %}
+
+    <div class="card-footer text-right actions-form">
+        {% block action_buttons %}
+{#            {% import '@SFAdminLTE3/default/buttons.html.twig' as buttons %}#}
+{#
+{{ buttons.save() }}
+{{ buttons.delete({ entity: requirement, action: path('m_requirement_delete', {'id': requirement.id}) }) }}
+#}
+              {{ "block action_buttons" }}
+        {% endblock action_buttons %}
+    </div>
+{% endblock body %}
