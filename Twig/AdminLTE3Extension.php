@@ -10,6 +10,7 @@ use Twig\Environment;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorInterface;
+use Tecnoready\Common\Util\StringUtil;
 
 /**
  * Extension de admin lte
@@ -58,49 +59,9 @@ class AdminLTE3Extension extends AbstractExtension
      */
     public function buildWithReferer($url, $referer)
     {
-        $unparseUrl = function(array $parsed) {
-            $pass = $parsed['pass'] ?? null;
-            $user = $parsed['user'] ?? null;
-            $userinfo = $pass !== null ? "$user:$pass" : $user;
-            $port = $parsed['port'] ?? 0;
-            $scheme = $parsed['scheme'] ?? "";
-            $query = $parsed['query'] ?? "";
-            $fragment = $parsed['fragment'] ?? "";
-            $authority = (
-                    ($userinfo !== null ? "$userinfo@" : "") .
-                    ($parsed['host'] ?? "") .
-                    ($port ? ":$port" : "")
-                    );
-            return (
-                    (\strlen($scheme) > 0 ? "$scheme:" : "") .
-                    (\strlen($authority) > 0 ? "//$authority" : "") .
-                    ($parsed['path'] ?? "") .
-                    (\strlen($query) > 0 ? "?$query" : "") .
-                    (\strlen($fragment) > 0 ? "#$fragment" : "")
-                    );
-        };
-
-
-        $removeQueryString = function($url) use ($unparseUrl) {
-            $toRemove = ["_referer"];
-            $urlParsedReferer = parse_url($url);
-            $queryOut = [];
-            $result = $url;
-            if (isset($urlParsedReferer["query"])) {
-                parse_str($urlParsedReferer["query"], $queryOut);
-                foreach ($toRemove as $key) {
-                    if (isset($queryOut[$key])) {
-                        unset($queryOut[$key]);
-                    }
-                }
-                $urlParsedReferer["query"] = http_build_query($queryOut);
-                $result = $unparseUrl($urlParsedReferer);
-            }
-            return $result;
-        };
-        
-        $referer = $removeQueryString($referer);
-        $url = $removeQueryString($url);
+        $toRemove = ["_referer"];
+        $referer = StringUtil::removeQueryStringURL($referer,$toRemove);
+        $url = StringUtil::removeQueryStringURL($url,$toRemove);
 
         $urlParsed = parse_url($url);
         $s = "?";
