@@ -13,7 +13,12 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": ">=7.1.0"
+        "php": ">=7.1.0",
+        "friendsofsymfony/jsrouting-bundle": "^2.5",
+        "tecnocreaciones/tools-bundle": "dev-develop",
+        "tecnoready/common": "dev-develop",
+        "tetranz/select2entity-bundle": "^3.0",
+        "vich/uploader-bundle": "^1.8"
     },
     "autoload": {
         "psr-4": { "Tecnoready\\SFAdminLTE3Bundle\\": "" },
