@@ -1,0 +1,49 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
+<p class="login-box-msg">{{ "title.login.sign_in_to_start"|trans({},"messages") }}</p>
+
+{% if error %}
+    <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+{% endif %}
+
+<form action="{{ path("fos_user_security_check") }}" method="post">
+    {% if csrf_token %}
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+    {% endif %}
+    <div class="input-group mb-3">
+        <input type="email" class="form-control"  id="username" name="_username" 
+               placeholder="{{ 'security.login.username'|trans }}" value="{{ last_username }}" required="required" autocomplete="username">
+        <div class="input-group-append">
+            <div class="input-group-text">
+                <span class="fas fa-envelope"></span>
+            </div>
+        </div>
+    </div>
+    <div class="input-group mb-3">
+        <input type="password" class="form-control" placeholder="{{ 'security.login.password'|trans }}" 
+               id="password" name="_password" required="required" autocomplete="current-password" >
+        <div class="input-group-append">
+            <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-8">
+            <div class="icheck-primary">
+                <input type="checkbox" id="remember_me" name="_remember_me" value="on"value="on">
+                <label for="remember_me">
+                    {{ 'security.login.remember_me'|trans }}
+                </label>
+            </div>
+        </div>
+        <!-- /.col -->
+        <div class="col-4">
+            <button type="submit" id="_submit" name="_submit" class="btn btn-primary btn-block">{{ 'security.login.submit'|trans }}</button>
+        </div>
+        <!-- /.col -->
+    </div>
+</form>
+<p class="mb-1">
+    <a href="{{ path("fos_user_resetting_request") }}">{{ "button.forgot_my_password"|trans({},"messages") }}</a>
+</p>

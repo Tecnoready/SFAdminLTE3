@@ -1,0 +1,21 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
+<p class="login-box-msg">You forgot your password? Here you can easily retrieve a new password.</p>
+
+<form action="{{ path('fos_user_resetting_send_email') }}" method="POST" class="fos_user_resetting_request">
+    <div class="input-group mb-3">
+        <input type="email" class="form-control" placeholder="{{ 'resetting.request.username'|trans }}"
+               id="username" name="username" required="required" >
+        <div class="input-group-append">
+            <div class="input-group-text">
+                <span class="fas fa-envelope"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary btn-block">{{ 'resetting.request.submit'|trans }}</button>
+        </div>
+        <!-- /.col -->
+    </div>
+</form>

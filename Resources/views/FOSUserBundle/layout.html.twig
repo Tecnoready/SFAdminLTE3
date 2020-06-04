@@ -1,0 +1,42 @@
+{% extends "@SFAdminLTE3/base/base.html.twig" %}
+
+
+{% block body_root %}
+    <body class="hold-transition login-page">
+        {% if app.request.hasPreviousSession %}
+            {% for type, messages in app.session.flashbag.all() %}
+                {% for message in messages %}
+                    <div class="flash-{{ type }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+
+        <div class="login-box">
+            <div class="login-logo">
+                <a href="#"><b>{{ app_name }}</b></a>
+            </div>
+            <div class="card">
+                <div class="card-body login-card-body">
+                    {% block fos_user_content %}
+                    {% endblock fos_user_content %}
+                    
+                    {% block post_content %}
+                        <p class="mt-3 mb-1">
+                            {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                                {{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }} |
+                                <a href="{{ path('fos_user_security_logout') }}">
+                                    {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
+                                </a>
+                            {% else %}
+                                <a href="{{ path('fos_user_security_login') }}">{{ 'layout.login'|trans({}, 'FOSUserBundle') }}</a>
+                            {% endif %}
+                        </p>
+                    {% endblock post_content %}
+                </div>
+            </div>
+        </div>
+    </body>
+{% endblock body_root %}
+
