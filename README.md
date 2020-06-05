@@ -25,3 +25,6 @@ Plantilla de AdminLTE 3 para symfony 4.x
         menu_builder: App\Service\MenuBuilder
 
 Crear clase Menu: `App\Service\MenuBuilder` debe heredar de `Tecnoready\SFAdminLTE3Bundle\Service\BaseMenuBuilder`
+
+- Edite su `webpack.config.js` y agregue la linea `.addEntry('dependencies', './assets/js/dependencies.js')`
+-

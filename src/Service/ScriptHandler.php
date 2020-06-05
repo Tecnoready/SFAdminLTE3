@@ -36,12 +36,25 @@ class ScriptHandler
     {
         self::write("###> tecnoready/sf-adminlte3-bundle ###");
         $fs = new Filesystem();
-//        self::installFOSUserBundle($vendorDir, $fs);
+        self::installFOSUserBundle($vendorDir, $fs);
+        self::assets($vendorDir, $fs);
         self::menu($vendorDir, $fs);
-//        self::installGitIgnore($vendorDir, $fs);
+        self::installGitIgnore($vendorDir, $fs);
         self::write("###< tecnoready/sf-adminlte3-bundle ###");
     }
 
+    protected static function assets($vendorDir, Filesystem $fs){
+        $targetDir = $vendorDir . "/../assets/js/dependencies.js";
+        $toAdd = [];
+        $toAdd[] = "import '../../vendor/tecnoready/sf-adminlte3-bundle/src/Resources/assets/js/dependencies.js';";
+        if(!$fs->exists($targetDir)){
+            self::write("Edite su 'webpack.config.js' y agregue la linea '%s'", $targetDir,".addEntry('dependencies', './assets/js/dependencies.js')");
+        }else{
+//            self::write("El archivo '%s' ya existe y se ignoro", $targetDir);
+        }
+        //Si falta algunas lineas hay que agregarlas
+        self::addToFile($fs,$targetDir, $toAdd);
+    }
     /**
      * Colcoar plantillas de fos
      * @param type $vendorDir
@@ -51,14 +64,14 @@ class ScriptHandler
     {
         $folderDir = __DIR__ . "/../Resources/views/FOSUserBundle";
 
-        self::write("Instalando enlace simbolico a plantilla FOSUserBundle");
         $targetDir = $vendorDir . "/../templates/bundles/FOSUserBundle";
         if (!$fs->exists($targetDir)) {
+            self::write("Instalando enlace simbolico a plantilla FOSUserBundle");
             $fs->symlink($folderDir, $targetDir);
 
             self::write("Se hizo un enlace simbolico de %s a %s", $folderDir, $targetDir);
         } else {
-            self::write("El path '%s' ya existe y se ignoro", $targetDir);
+//            self::write("El path '%s' ya existe y se ignoro", $targetDir);
         }
     }
     /**
@@ -68,7 +81,6 @@ class ScriptHandler
      */
     protected static function menu($vendorDir, Filesystem $fs)
     {
-        self::write("Instalando enlace simbolico a plantilla FOSUserBundle");
         $targetDir = $vendorDir . "/../src/Service/MenuBuilder.php";
         if (!$fs->exists($targetDir)) {
             $menuSkeleton = 
@@ -148,7 +160,7 @@ EOF;
             $fs->dumpFile($targetDir, $menuSkeleton);
             self::write("Se creo un esqueleto del menu en '%s'", $targetDir);
         } else {
-            self::write("El menu '%s' ya existe y se ignoro", $targetDir);
+//            self::write("El menu '%s' ya existe y se ignoro", $targetDir);
         }
     }
     
@@ -160,17 +172,21 @@ EOF;
     protected static function installGitIgnore($vendorDir, Filesystem $fs)
     {
         $targetDir = $vendorDir . "/../.gitignore";
-        
-        $toIgnore = ["templates/bundles/FOSUserBundle"];
+        $toAdd = ["templates/bundles/FOSUserBundle"];
+        //Si falta algunas lineas hay que agregarlas
+        self::addToFile($fs,$targetDir, $toAdd);
+    }
+    
+    protected static function addToFile(Filesystem $fs,$targetDir,$toAdd)
+    {
         if($fs->exists($targetDir)){
             $handle = fopen($targetDir, "r");
             if ($handle) {
                 while (($line = fgets($handle)) !== false) {
                     $line = str_replace("\n", "", $line);
-//                    var_dump($line);
-                    if(in_array($line, $toIgnore)){
-                        $index = array_search($line, $toIgnore);
-                        unset($toIgnore[$index]);
+                    if(in_array($line, $toAdd)){
+                        $index = array_search($line, $toAdd);
+                        unset($toAdd[$index]);
                     }
                 }
                 fclose($handle);
@@ -178,15 +194,14 @@ EOF;
         }else{
             $fs->dumpFile($targetDir, "");
         }
-        
         //Si falta algunas lineas hay que agregarlas
-        if(count($toIgnore) > 0){
+        if(count($toAdd) > 0){
             $fp = fopen($targetDir, 'a');//opens file in append mode
-            fwrite($fp,"\n\n"."###> tecnoready/sf-adminlte3-bundle ###");  
-            foreach ($toIgnore as $line) {
+            fwrite($fp,"\n\n"."//###> tecnoready/sf-adminlte3-bundle ###");  
+            foreach ($toAdd as $line) {
                 fwrite($fp,"\n".$line);  
             }
-            fwrite($fp,"\n"."###< tecnoready/sf-adminlte3-bundle ###\n");
+            fwrite($fp,"\n"."//###< tecnoready/sf-adminlte3-bundle ###\n");
             fclose($fp);
             self::write("Se actualizo el archivo '%s'",$targetDir);
         }
