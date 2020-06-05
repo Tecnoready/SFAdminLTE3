@@ -25,17 +25,17 @@ class ScriptHandler
 
     public static function postInstall(Event $event)
     {
+        self::handleCommands($event);
         self::handle($event->getComposer()->getConfig()->get('vendor-dir'));
-        handleCommands($event);
     }
 
     public static function postUpdate(Event $event)
     {
+        self::handleCommands($event);
         self::handle($event->getComposer()->getConfig()->get('vendor-dir'));
-        handleCommands($event);
     }
     
-    public function handleCommands(Event $event)
+    public static function handleCommands(Event $event)
     {
         $event->getIO()->write(sprintf('Compilando rutas en js'));
         $process = self::executeCommandLine("bin/console fos:js-routing:dump --format=json --target=public/assets/js/fos_js_routes.json", $event, 10);
