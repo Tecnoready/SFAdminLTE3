@@ -57,13 +57,27 @@ class ScriptHandler
         $targetDir = $vendorDir . "/../assets/js/dependencies.js";
         $toAdd = [];
         $toAdd[] = "import '../../vendor/tecnoready/sf-adminlte3-bundle/src/Resources/assets/js/dependencies.js';";
-        if(!$fs->exists($targetDir)){
-            self::write("Edite su 'webpack.config.js' y agregue la linea '%s'", $targetDir,".addEntry('dependencies', './assets/js/dependencies.js')");
-        }else{
-//            self::write("El archivo '%s' ya existe y se ignoro", $targetDir);
-        }
         //Si falta algunas lineas hay que agregarlas
-        self::addToFile($fs,$targetDir, $toAdd);
+        $added = self::addToFile($fs,$targetDir, $toAdd);
+        if($added){
+            $content = <<<EOF
+.addEntry('dependencies', './assets/js/dependencies.js')
+.copyFiles([
+  {from: './node_modules/ckeditor/', to: 'ckeditor/[path][name].[ext]', pattern: /\.(js|css)$/, includeSubdirectories: false},
+  {from: './node_modules/ckeditor/adapters', to: 'ckeditor/adapters/[path][name].[ext]'},
+  {from: './node_modules/ckeditor/lang', to: 'ckeditor/lang/[path][name].[ext]'},
+  {from: './node_modules/ckeditor/plugins', to: 'ckeditor/plugins/[path][name].[ext]'},
+  {from: './node_modules/ckeditor/skins', to: 'ckeditor/skins/[path][name].[ext]'}
+])
+.autoProvideVariables({
+    moment: "moment"
+})
+.addPlugin(new MomentLocalesPlugin({
+    localesToKeep: ['es'],
+}));
+EOF;
+            self::write("Edite su 'webpack.config.js' y agregue las lineas\n\n'%s'", $content);
+        }
     }
     /**
      * Colcoar plantillas de fos
@@ -189,6 +203,7 @@ EOF;
     
     protected static function addToFile(Filesystem $fs,$targetDir,$toAdd)
     {
+        $added = false;
         if($fs->exists($targetDir)){
             $handle = fopen($targetDir, "r");
             if ($handle) {
@@ -214,7 +229,9 @@ EOF;
             fwrite($fp,"\n"."//###< tecnoready/sf-adminlte3-bundle ###\n");
             fclose($fp);
             self::write("Se actualizo el archivo '%s'",$targetDir);
+            $added = true;
         }
+        return $added;
     }
     
     protected static function write()
