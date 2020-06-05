@@ -19,7 +19,8 @@
         "tecnoready/common": "dev-develop",
         "tetranz/select2entity-bundle": "^3.0",
         "vich/uploader-bundle": "^1.8",
-        "symfony/webpack-encore-bundle": "^1.7"
+        "symfony/webpack-encore-bundle": "^1.7",
+        "knplabs/knp-menu-bundle": "^2.3"
     },
     "autoload": {
         "psr-4": { "Tecnoready\\SFAdminLTE3Bundle\\": "src/" },
