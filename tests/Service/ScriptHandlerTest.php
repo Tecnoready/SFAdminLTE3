@@ -13,7 +13,6 @@ namespace Tecnoready\SFAdminLTE3Bundle\Tests\Service;
 
 use PHPUnit\Framework\TestCase;
 use Tecnoready\SFAdminLTE3Bundle\Service\ScriptHandler;
-use Composer\Script\Event;
 
 /**
  * Test de Manejador de eventos de composer
@@ -22,10 +21,9 @@ use Composer\Script\Event;
  */
 class ScriptHandlerTest extends TestCase
 {
-    public function testPostInstall()
+    public function testHandle()
     {
-        $event = new Event();
-        
-        ScriptHandler::postInstall($event);
+        $vendorDir = dirname(__DIR__,4);
+        ScriptHandler::handle($vendorDir);
     }
 }

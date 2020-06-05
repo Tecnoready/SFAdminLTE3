@@ -15,6 +15,9 @@ Plantilla de AdminLTE 3 para symfony 4.x
             ]
         }
 
+### 2) .gitignore
+Ignorar el path `templates/bundles/FOSUserBundle`
+
 ### 2) Instalar paquete
 
     composer require tecnoready/sf-adminlte3-bundle
