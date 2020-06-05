@@ -14,6 +14,7 @@ namespace Tecnoready\SFAdminLTE3Bundle\Service;
 use Composer\Script\Event;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 /**
  * Manejador de eventos de composer
