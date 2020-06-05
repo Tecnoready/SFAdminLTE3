@@ -34,12 +34,13 @@ class ScriptHandler
     protected static function handle(Event $event)
     {
         $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
-        self::installFOSUserBundle($vendorDir);
+        $fs = new Filesystem();
+        self::installFOSUserBundle($vendorDir,$fs);
     }
     
-    protected static function installFOSUserBundle($vendorDir)
+    protected static function installFOSUserBundle($vendorDir,Filesystem $fs)
     {
-        $fs = new Filesystem();
+        
         $folderDir = __DIR__."/../Resources/views/FOSUserBundle/layout.html.twig";
 
         echo "*** tecnoready/sf-adminlte3-bundle: Instalando enlace simbolico a plantilla FOSUserBundle... \t";

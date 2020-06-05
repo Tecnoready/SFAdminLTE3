@@ -18,7 +18,8 @@
         "tecnocreaciones/tools-bundle": "dev-develop",
         "tecnoready/common": "dev-develop",
         "tetranz/select2entity-bundle": "^3.0",
-        "vich/uploader-bundle": "^1.8"
+        "vich/uploader-bundle": "^1.8",
+        "symfony/webpack-encore-bundle": "^1.7"
     },
     "autoload": {
         "psr-4": { "Tecnoready\\SFAdminLTE3Bundle\\": "" },
