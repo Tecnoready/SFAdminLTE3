@@ -13,6 +13,7 @@ namespace Tecnoready\SFAdminLTE3Bundle\Service;
 
 use Composer\Script\Event;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 /**
  * Manejador de eventos de composer
@@ -25,11 +26,19 @@ class ScriptHandler
     public static function postInstall(Event $event)
     {
         self::handle($event->getComposer()->getConfig()->get('vendor-dir'));
+        handleCommands($event);
     }
 
     public static function postUpdate(Event $event)
     {
         self::handle($event->getComposer()->getConfig()->get('vendor-dir'));
+        handleCommands($event);
+    }
+    
+    public function handleCommands(Event $event)
+    {
+        $event->getIO()->write(sprintf('Compilando rutas en js'));
+        $process = self::executeCommandLine("bin/console fos:js-routing:dump --format=json --target=public/assets/js/fos_js_routes.json", $event, 10);
     }
 
     public static function handle($vendorDir)
@@ -216,6 +225,19 @@ EOF;
 //        sprintf($message, $args);
         //var_dump($args);
         echo "\n********** ".$message." **********";
+    }
+    
+    private static function executeCommandLine($cmd, $event, $maxMinutes = 3)
+    {
+        $event->getIO()->alert(sprintf('Ejecutando: %s', $cmd));
+        $process = new Process($cmd);
+        $process->setTimeout(60 * $maxMinutes);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        $event->getIO()->write(sprintf('Resultado: %s', $process->getOutput()));
+        return $process;
     }
 
 }
