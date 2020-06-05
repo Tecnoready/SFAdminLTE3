@@ -33,6 +33,12 @@ class SFAdminLTE3Extension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
+        
+        $locator = new FileLocator(__DIR__.'/../Resources/config');
+        $loaderYml = new Loader\YamlFileLoader($container, $locator);
+        $loaderYml->load("services.yaml");
+        
+        
         $menuBuilder = new ReflectionClass($config["menu_builder"]);
         if($menuBuilder->isSubclassOf(BaseMenuBuilder::class) === false){
             throw new LogicException(sprintf('The "%s" must inherit from "%s"',$menuBuilder->getName(),BaseMenuBuilder::class));
@@ -44,7 +50,7 @@ class SFAdminLTE3Extension extends Extension
                 ->setAutowired(true)
                 ;
         $container->setDefinition("sf_admin_lte3.menubuilder", $menuBuilderDefinition);
-//        var_dump($config);
-//        die;
+        
+        $container->setParameter("sf_admin_lte3.app_name", $config["app_name"]);
     }
 }

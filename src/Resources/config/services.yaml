@@ -1,0 +1,9 @@
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        
+    Tecnoready\SFAdminLTE3Bundle\Twig\AdminLTE3Extension:
+        tags:
+             - { name: 'twig.extension' }

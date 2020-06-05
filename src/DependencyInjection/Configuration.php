@@ -28,7 +28,8 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('sf_admin_lte3');
         $rootNode
                 ->children()
-                    ->scalarNode('menu_builder')->defaultNull()->cannotBeEmpty()->end()
+                    ->scalarNode('menu_builder')->defaultValue("App\Service\MenuBuilder")->cannotBeEmpty()->end()
+                    ->scalarNode('app_name')->isRequired()->end()
                 ->end();
         return $treeBuilder;
     }
