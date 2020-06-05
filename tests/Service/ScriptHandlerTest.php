@@ -9,14 +9,23 @@
  * file that was distributed with this source code.
  */
 
-namespace sdsdsd;
+namespace Tecnoready\SFAdminLTE3Bundle\Tests\Service;
+
+use PHPUnit\Framework\TestCase;
+use Tecnoready\SFAdminLTE3Bundle\Service\ScriptHandler;
+use Composer\Script\Event;
 
 /**
- * Description of ScriptHandlerTest
+ * Test de Manejador de eventos de composer
  *
  * @author Carlos Mendoza <inhack20@gmail.com>
  */
-class ScriptHandlerTest
+class ScriptHandlerTest extends TestCase
 {
-    //put your code here
+    public function testPostInstall()
+    {
+        $event = new Event();
+        
+        ScriptHandler::postInstall($event);
+    }
 }
