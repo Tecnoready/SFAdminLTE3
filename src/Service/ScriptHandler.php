@@ -36,8 +36,9 @@ class ScriptHandler
     {
         self::write("###> tecnoready/sf-adminlte3-bundle ###");
         $fs = new Filesystem();
-        self::installFOSUserBundle($vendorDir, $fs);
-        self::installGitIgnore($vendorDir, $fs);
+//        self::installFOSUserBundle($vendorDir, $fs);
+        self::menu($vendorDir, $fs);
+//        self::installGitIgnore($vendorDir, $fs);
         self::write("###< tecnoready/sf-adminlte3-bundle ###");
     }
 
@@ -58,6 +59,96 @@ class ScriptHandler
             self::write("Se hizo un enlace simbolico de %s a %s", $folderDir, $targetDir);
         } else {
             self::write("El path '%s' ya existe y se ignoro", $targetDir);
+        }
+    }
+    /**
+     * Coloca la base del menu
+     * @param type $vendorDir
+     * @param Filesystem $fs
+     */
+    protected static function menu($vendorDir, Filesystem $fs)
+    {
+        self::write("Instalando enlace simbolico a plantilla FOSUserBundle");
+        $targetDir = $vendorDir . "/../src/Service/MenuBuilder.php";
+        if (!$fs->exists($targetDir)) {
+            $menuSkeleton = 
+<<<EOF
+<?php
+
+/*
+ * This file is part of the SFAdminLTE3Bundle package.
+ *
+ * (c) Tecnoready <https://github.com/Tecnoready/SFAdminLTE3Bundle/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+                    
+namespace App\Service;
+
+use Tecnoready\SFAdminLTE3Bundle\Service\BaseMenuBuilder;
+
+/**
+ * Constructor del menu
+ *
+ * @author Carlos Mendoza <inhack20@gmail.com>
+ */
+class MenuBuilder extends BaseMenuBuilder
+{
+    public function createMainMenu(array \$options)
+    {
+        \$menu = \$this->createRootMainMenu(\$options);
+        
+        //TODO agrege sus menus
+        /*
+        \$menu->addChild('menu.home', [
+            'route' => 'p_main_index',
+        ]);
+        if (\$this->isGranted("ROLE_AREA_ADMIN_PAGE")) {
+            \$menu->addChild('menu.admin', [
+                'route' => 'easyadmin',
+                "extras" => [
+                    "icon" => "fa fa-fw fa-cogs"
+                ]
+            ]);
+        }
+        */
+        
+        \$menu->addChild('menu.logout', [
+            'route' => 'fos_user_security_logout',
+            "extras" => [
+                "icon" => "fas fa-fw fa-sign-out-alt"
+            ]
+        ]);
+        return \$menu;
+    }
+
+    public function createTopMenu(array \$options)
+    {
+        \$menu = \$this->createRootTopMenu(\$options);
+
+        \$menu->addChild('menu.top.pushmenu', [
+            'uri' => '#',
+            "linkAttributes" => [
+                "data-widget" => "pushmenu",
+            ],
+             "extras" => [
+                "icon" => "fas fa-bars",
+            ]
+        ]);
+        //TODO agrege sus menus
+        //\$menu->addChild('menu.home', [
+        //    'route' => 'p_main_index',
+        //]);
+        return \$menu;
+    }
+}
+EOF;
+            
+            $fs->dumpFile($targetDir, $menuSkeleton);
+            self::write("Se creo un esqueleto del menu en '%s'", $targetDir);
+        } else {
+            self::write("El menu '%s' ya existe y se ignoro", $targetDir);
         }
     }
     
