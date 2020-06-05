@@ -22,9 +22,14 @@
         "symfony/webpack-encore-bundle": "^1.7"
     },
     "autoload": {
-        "psr-4": { "Tecnoready\\SFAdminLTE3Bundle\\": "" },
+        "psr-4": { "Tecnoready\\SFAdminLTE3Bundle\\": "src/" },
         "exclude-from-classmap": [
             "/Tests/"
         ]
+    },
+    "autoload-dev": {
+        "psr-4" : {
+            "Tecnoready\\SFAdminLTE3Bundle\\Tests\\" : "tests/"
+        }
     }
 }
