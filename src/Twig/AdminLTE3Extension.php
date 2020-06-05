@@ -11,13 +11,15 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Tecnoready\Common\Util\StringUtil;
+use Twig\Extension\GlobalsInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
  * Extension de admin lte
  *
  * @author Carlos Mendoza <inhack20@gmail.com>
  */
-class AdminLTE3Extension extends AbstractExtension
+class AdminLTE3Extension extends AbstractExtension implements GlobalsInterface
 {
     /**
      * @var Environment
@@ -35,6 +37,11 @@ class AdminLTE3Extension extends AbstractExtension
      */
     private $router;
     
+    /**
+     * @var ParameterBagInterface
+     */
+    private $parameterBag;
+    
     public function getFunctions()
     {
         return [
@@ -49,6 +56,11 @@ class AdminLTE3Extension extends AbstractExtension
             new TwigFilter('resolve_options', [$this, 'resolveOptions']),
             new TwigFilter('resolve_tooltip', [$this, 'resolveTooltip']),
         ];
+    }
+    
+    public function getGlobals(): array
+    {
+        return ["app_name" => $this->parameterBag->get("sf_admin_lte3.app_name")];
     }
     
     /**
@@ -224,4 +236,15 @@ class AdminLTE3Extension extends AbstractExtension
         return $this->translator->trans($message, $arguments, $domain);
     }
     
+    /**
+     * @required
+     * @param ParameterBagInterface $parameterBag
+     * @return $this
+     */
+    public function setParameterBag(ParameterBagInterface $parameterBag)
+    {
+        $this->parameterBag = $parameterBag;
+        return $this;
+    }
+
 }
