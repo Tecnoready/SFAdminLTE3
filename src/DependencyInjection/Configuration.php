@@ -30,6 +30,9 @@ class Configuration implements ConfigurationInterface
                 ->children()
                     ->scalarNode('menu_builder')->defaultValue("App\Service\MenuBuilder")->cannotBeEmpty()->end()
                     ->scalarNode('app_name')->isRequired()->end()
+                    ->arrayNode('template_options')
+                        ->isRequired()->prototype('scalar')->end()
+                    ->end()
                 ->end();
         return $treeBuilder;
     }

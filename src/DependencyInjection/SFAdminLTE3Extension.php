@@ -20,6 +20,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use ReflectionClass;
 use Tecnoready\SFAdminLTE3Bundle\Service\BaseMenuBuilder;
 use LogicException;
+use Tecnoready\SFAdminLTE3Bundle\Service\TemplateLTEManager;
 
 /**
  * This is the class that loads and manages your bundle configuration
@@ -52,5 +53,12 @@ class SFAdminLTE3Extension extends Extension
         $container->setDefinition("sf_admin_lte3.menubuilder", $menuBuilderDefinition);
         
         $container->setParameter("sf_admin_lte3.app_name", $config["app_name"]);
+        
+        $templateLTEManagerDefinition = new Definition(TemplateLTEManager::class);
+        $templateLTEManagerDefinition
+                ->addArgument($config["template_options"])
+            ;
+        
+        $container->setDefinition(TemplateLTEManager::class, $templateLTEManagerDefinition);
     }
 }

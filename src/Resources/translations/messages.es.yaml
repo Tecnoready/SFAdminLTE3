@@ -11,3 +11,7 @@ title.recover_password: "Estás a solo un paso de tu nueva contraseña, recupera
 placeholder.password: "Contraseña"
 placeholder.confirm_password: "Confirmar contraseña"
 help.resetting.request: "¿Olvidaste tu contraseña? Aquí puede recuperar fácilmente una nueva contraseña."
+menu.home: "Inicio"
+menu.logout: "Cerrar sesión"
+menu.top.pushmenu: ""
+title.dashboard: "Dashboard"

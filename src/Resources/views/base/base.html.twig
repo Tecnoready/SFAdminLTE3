@@ -142,8 +142,8 @@
                     <!-- Main Sidebar Container -->
                     <aside class="main-sidebar sidebar-dark-primary elevation-4">
                         <!-- Brand Logo -->
-                        <a href="{{ path("p_main_index") }}" class="brand-link">
-                            <img src="{{ asset("build/images/logo.png") }}"
+                        <a href="{{ path(template_lte_manager.getOption("route_main")) }}" class="brand-link">
+                            <img src="{{ asset(template_lte_manager.getOption("logo")) }}"
                                  alt="{{ app_name }}"
                                  class="brand-image img-circle elevation-3">
                             <span class="brand-text font-weight-light">{{ app_name }}</span>
@@ -154,9 +154,9 @@
                             <!-- Sidebar user (optional) -->
                             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                                 <div class="image">
-                                    {% set urlProfile = asset("build/images/avatar_m.png") %}
+                                    {% set urlProfile = asset(template_lte_manager.getOption("default_avatar")) %}
                                     {% if app.user %}
-                                        {% set urlProfile = generate_image_url(app.user,"photoFile",{ "default":urlProfile  } ) %}
+                                        {% set urlProfile = generate_image_url(app.user,template_lte_manager.getOption("user_profile_photo_property"),{ "default":urlProfile  } ) %}
                                     {% endif %}
                                     <img src="{{ urlProfile }}" class="img-circle elevation-2" alt="{{ app.user }}">
                                 </div>
@@ -230,9 +230,9 @@
 
                     <footer class="main-footer">
                         <div class="float-right d-none d-sm-block">
-                            <b>Version</b> 1.0.0
+                            <b>Version</b> {{ template_lte_manager.getOption("footer_version") }}
                         </div>
-                        <strong>Copyright &copy; 2020 <a href="https://ghhoteles.com.ve/" target="_blank">GH Hoteles</a>.</strong> Todos los derechos reservado.
+                        <strong>Copyright &copy; {{ template_lte_manager.getOption("footer_year") }} <a href="{{ template_lte_manager.getOption("footer_href") }}" target="_blank">{{ template_lte_manager.getOption("footer_name") }}</a>.</strong> Todos los derechos reservado.
                     </footer>
 
                     <!-- Control Sidebar -->
@@ -244,7 +244,9 @@
                 <!-- ./wrapper -->
 
                 {{ encore_entry_script_tags('dependencies') }}
-                <script src="{{ path("p_main_runtime_js") }}"></script>
+                {% if template_lte_manager.getOption("route_runtime_js") is not null %}
+                    <script src="{{ path(template_lte_manager.getOption("route_runtime_js")) }}"></script>
+                {% endif %}
                 {{ encore_entry_script_tags('app') }}
                 {% block javascripts '' %}
                     <!-- jQuery -->

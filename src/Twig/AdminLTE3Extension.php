@@ -13,6 +13,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 use Tecnoready\Common\Util\StringUtil;
 use Twig\Extension\GlobalsInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Tecnoready\SFAdminLTE3Bundle\Service\TemplateLTEManager;
 
 /**
  * Extension de admin lte
@@ -42,6 +43,11 @@ class AdminLTE3Extension extends AbstractExtension implements GlobalsInterface
      */
     private $parameterBag;
     
+    /**
+     * @var TemplateLTEManager 
+     */
+    private $templateLTEManager;
+
     public function getFunctions()
     {
         return [
@@ -60,7 +66,10 @@ class AdminLTE3Extension extends AbstractExtension implements GlobalsInterface
     
     public function getGlobals(): array
     {
-        return ["app_name" => $this->parameterBag->get("sf_admin_lte3.app_name")];
+        return [
+            "app_name" => $this->parameterBag->get("sf_admin_lte3.app_name"),
+            "template_lte_manager" => $this->templateLTEManager,
+        ];
     }
     
     /**
@@ -246,5 +255,17 @@ class AdminLTE3Extension extends AbstractExtension implements GlobalsInterface
         $this->parameterBag = $parameterBag;
         return $this;
     }
+    
+    /**
+     * @required
+     * @param TemplateLTEManager $templateLTEManager
+     * @return $this
+     */
+    public function setTemplateLTEManager(TemplateLTEManager $templateLTEManager)
+    {
+        $this->templateLTEManager = $templateLTEManager;
+        return $this;
+    }
+
 
 }

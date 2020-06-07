@@ -28,6 +28,10 @@ Plantilla de AdminLTE 3 para symfony 4.x
 
 - Crear clase Menu: `App\Service\MenuBuilder` debe heredar de `Tecnoready\SFAdminLTE3Bundle\Service\BaseMenuBuilder`
 - Edite su `webpack.config.js` y agregue las lineas:
+
+      const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
+      
+      Encore
       .addEntry('dependencies', './assets/js/dependencies.js')
       .copyFiles([
         {from: './node_modules/ckeditor/', to: 'ckeditor/[path][name].[ext]', pattern: /\.(js|css)$/, includeSubdirectories: false},
