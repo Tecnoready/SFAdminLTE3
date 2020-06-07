@@ -1,6 +1,6 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
-<p class="login-box-msg">You forgot your password? Here you can easily retrieve a new password.</p>
+<p class="login-box-msg">{{ "help.resetting.request"|trans({},"messages") }}</p>
 
 <form action="{{ path('fos_user_resetting_send_email') }}" method="POST" class="fos_user_resetting_request">
     <div class="input-group mb-3">

@@ -1,0 +1,13 @@
+popup.loading: "Cargando, por favor espere..."
+popup.button.cancel: Cancelar
+popup.button.confirm: "Aceptar"
+title.alert.info: 'Información!'
+title.alert.success: 'Correcto!'
+title.alert.danger: 'Error!'
+title.alert.warning: 'Advertencia!'
+title.login.sign_in_to_start: "Inicia sesión para empezar."
+button.forgot_my_password: "Olvidé mi contraseña"
+title.recover_password: "Estás a solo un paso de tu nueva contraseña, recupera tu contraseña ahora."
+placeholder.password: "Contraseña"
+placeholder.confirm_password: "Confirmar contraseña"
+help.resetting.request: "¿Olvidaste tu contraseña? Aquí puede recuperar fácilmente una nueva contraseña."
