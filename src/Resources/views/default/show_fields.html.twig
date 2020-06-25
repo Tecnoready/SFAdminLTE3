@@ -18,13 +18,10 @@
     {{ field(params) }}
 {% endmacro progress %}
 
-{% macro integer(params) %}
-    {% set options = defaults|resolve_options(params,{ required: ["field_type","value"],allowedValues: { field_type:["integer","string","association","image","datetime","time","boolean"] } }) %}
+{% macro integer(value,params) %}
     {% from '@SFAdminLTE3/default/show_fields.html.twig' import field as field %}
-    {{ field({
-        value: value,
-        field_type: "integer"
-    }) }}
+    {% set params = params|merge({ field_type: "string",value:value }) %}
+    {{ field(params) }}
 {% endmacro integer %}
 
 {% macro string(value,params) %}
