@@ -87,7 +87,7 @@
 {% endmacro boolean %}
 
 {% macro field(params) %}
-    {% set defaults = { label: null,label_parameters:{},help: null,help_parameters:{},raw: false } %}
+    {% set defaults = { label: null,label_parameters:{},help: null,help_parameters:{},raw: false,html_pre: null,html_post:null } %}
     {% set options = defaults|resolve_options(params,{ required: ["field_type","value"],allowedValues: { field_type:["integer","string","text","association","image","datetime","date","time","boolean"] } }) %}
 
     <div class="form-group field-{{ options.field_type}}">
@@ -96,6 +96,10 @@
         </label>
         <div class="form-widget">
             <div class="form-control">
+                {% if options.html_pre is not null %}
+                    {{ options.html_pre|raw }}
+                {% endif %}
+                
                 {% if options.value is null %}
                 <span class="badge badge-secondary">Nulo</span>
                 {% else %}
@@ -104,6 +108,10 @@
                     {% else %}
                         {{ options.value }}
                     {% endif %}
+                {% endif %}
+                
+                {% if options.html_post is not null %}
+                    {{ options.html_post|raw }}
                 {% endif %}
             </div>
             {% if options.help is not null %}
