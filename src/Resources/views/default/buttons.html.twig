@@ -286,10 +286,11 @@
 
 {# Constructor  de "button" generico #}
 {% macro button(params) %}
-    {% set defaults = { icon: null,icon_prepend:null, class: 'btn btn-primary',type: null,attr: {},role:{},popup:{} } %}
+    {% set defaults = { icon: null,icon_prepend:null, class: 'btn btn-primary',type: null,attr: {},role:{},popup:{},question: { title: null, text: null,on_confirm: null} } %}
     {% set options = defaults|resolve_options(params,{ allowedValues: { type: ['submit',null] },required: ["label"] }) %}
     {% set role = { attributes: null,subject: null,message: null }|resolve_options(options.role,{ required: ["attributes","subject"] }) %}
     {% set popup = { uri: null,loading_text: "popup.loading",confirm_button_text: "popup.button.confirm",cancel_button_text: "popup.button.cancel" }|resolve_options(options.popup,{ }) %}
+    {% set question = { title: ("question.title"|trans),confirm_button_text: "question.button.yes",cancel_button_text: "question.button.no" }|resolve_options(options.question,{ required: ["text","on_confirm"] }) %}
 
     {% set id = random() %}
     {% set btnId = "btn_"~id %}
@@ -300,7 +301,7 @@
     {% endif %}
     {% if role.attributes is null or is_granted(role.attributes,role.subject) %}
         <button {{ block('attributes') }}>{% if options.icon_prepend %}<i class="{{ options.icon_prepend }} mr-2"></i>{% endif %}<i class="{{ options.icon }} mr-2"></i>{{ options.label|trans }}</button>
-                {% if popup.uri is not null %}
+            {% if popup.uri is not null %}
             <script>
                 var init = function () {
                 {% set uri = build_with_referer(popup.uri,app.request.requestUri) %}
@@ -460,6 +461,28 @@
                         init();
                     }
             </script>
+        {% elseif question.text is not null %}
+                <script>
+                    document.addEventListener("DOMContentLoaded", function (event) {
+                        $("#{{ btnId }}").on("click", function () {
+                            Swal.fire({
+                                title: '{{ question.title }}',
+                                text: "{{ question.text }}",
+                                icon: 'question',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: '{{ question.confirm_button_text|trans }}',
+                                cancelButtonText: '{{ question.cancel_button_text|trans }}',
+                            }).then((result) => {
+                                if (result.value) {
+                                    {{ question.on_confirm|raw }}
+                                }
+                            });
+                            return false;
+                        });
+                    });
+                </script>
         {% endif %}
     {% else %}
         {#        TODO deshabilitar boton si tiene texto o desaparecer#}
@@ -484,29 +507,29 @@
         {% set href = build_with_referer(options.href,app.request.requestUri) %}
         {% set attr = attr|merge({class: options.class, href: href, target: options.target,id: aId}) %}
         <a {{ block('attributes') }}>{% if options.icon_prepend %}<i class="{{ options.icon_prepend }} {{ options.icon_separator }}"></i>{% endif %}<i class="{{ options.icon }} {{ options.icon_separator }}"></i>{{ options.label|trans }}</a>
-                {% if question.text is not null %}
-            <script>
-                document.addEventListener("DOMContentLoaded", function (event) {
-                    $("#{{ aId }}").on("click", function () {
-                        Swal.fire({
-                            title: '{{ question.title }}',
-                            text: "{{ question.text }}",
-                            icon: 'question',
-                            showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: '{{ question.confirm_button_text|trans }}',
-                            cancelButtonText: '{{ question.cancel_button_text|trans }}',
-                        }).then((result) => {
-                            if (result.value) {
-                                window.location.href = $("#{{ aId }}").attr("href");
-                            }
+            {% if question.text is not null %}
+                <script>
+                    document.addEventListener("DOMContentLoaded", function (event) {
+                        $("#{{ aId }}").on("click", function () {
+                            Swal.fire({
+                                title: '{{ question.title }}',
+                                text: "{{ question.text }}",
+                                icon: 'question',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: '{{ question.confirm_button_text|trans }}',
+                                cancelButtonText: '{{ question.cancel_button_text|trans }}',
+                            }).then((result) => {
+                                if (result.value) {
+                                    window.location.href = $("#{{ aId }}").attr("href");
+                                }
+                            });
+                            return false;
                         });
-                        return false;
                     });
-                });
-            </script>
-        {% endif %}
+                </script>
+            {% endif %}
     {% else %}
         {% if role.message is not null %}
             {% set attr = attr|merge({class: options.class ~ " disabled", href: ""}) %}
