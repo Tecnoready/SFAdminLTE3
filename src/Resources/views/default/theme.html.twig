@@ -27,6 +27,27 @@
     </script>
 {% endblock %}
 
+{% block datetime_widget %}
+    {% set target = form.vars.id~"_tg" %}
+    <div class="input-group date" id="{{ target }}" data-target-input="nearest">
+        {{ parent() }}
+        <div class="input-group-append" data-target="#{{ target }}" data-toggle="datetimepicker">
+            <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function (event) {
+            $('#{{ target }}').datetimepicker({
+                format: 'DD/MM/YYYY hh:mm A',
+                icons: {
+                    time: "far fa-clock",
+                },
+                locale: 'es'
+            });
+        });
+    </script>
+{% endblock datetime_widget %}
+
 {% block time_widget %}
     {% set target = form.vars.id~"_tg" %}
     <div class="input-group date" id="{{ target }}" data-target-input="nearest">
@@ -38,7 +59,11 @@
     <script>
         document.addEventListener("DOMContentLoaded", function (event) {
             $('#{{ target }}').datetimepicker({
-                format: 'LT'
+                format: 'LT',
+                icons: {
+                    time: "far fa-clock",
+                },
+                locale: 'es'
             });
         });
     </script>
