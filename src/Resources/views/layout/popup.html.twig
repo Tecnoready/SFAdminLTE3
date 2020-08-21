@@ -1,3 +1,7 @@
+{# {% from '@SFAdminLTE3/default/ui_elements.html.twig' import flashes as flashes %}
+{{ flashes() }} #}
+{# No se imprimen los flashes para que cuando se cierre el pop up se impriman en la plantilla base #}
+
 {% set popup = {width: "70%"}|resolve_options(popup|default({}),{  }) %}
 
 {% block content '' %}
