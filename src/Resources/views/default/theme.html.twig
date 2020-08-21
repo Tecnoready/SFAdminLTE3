@@ -35,8 +35,9 @@
             <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
         </div>
     </div>
+    {% set id = random() %}
     <script>
-        document.addEventListener("DOMContentLoaded", function (event) {
+        var init{{ id }} = function(){
             $('#{{ target }}').datetimepicker({
                 format: 'DD/MM/YYYY hh:mm A',
                 icons: {
@@ -44,7 +45,13 @@
                 },
                 locale: 'es'
             });
+        };
+        document.addEventListener("DOMContentLoaded", function (event) {
+            init{{ id }}();
         });
+        if(document.readyState == "complete" || document.readyState == "interactive"){
+            init{{ id }}();
+        }
     </script>
 {% endblock datetime_widget %}
 

@@ -48,6 +48,7 @@
     {% from '@SFAdminLTE3/default/buttons.html.twig' import a as a %}
     {% set options = {}|resolve_options(params,{ required: ["action_show","action_edit","entity"] }) %}
 
+    {% if options.action_show is not null %}
     {{ a({
         label: "button.list.show",
         href: options.action_show,
@@ -57,15 +58,19 @@
         role: {attributes: "SHOW",subject:options.entity },
         }) 
     }}
-    {{ a({
-        label: "button.list.edit",
-        href: options.action_edit,
-        class: "btn btn-link btn-sm",
-        icon: "fas fa-edit",
-        icon_separator: "mr-1",
-        role: {attributes: "EDIT",subject:options.entity },
-        }) 
-    }}
+    {% endif %}
+    
+    {% if options.action_edit is not null %}
+        {{ a({
+            label: "button.list.edit",
+            href: options.action_edit,
+            class: "btn btn-link btn-sm",
+            icon: "fas fa-edit",
+            icon_separator: "mr-1",
+            role: {attributes: "EDIT",subject:options.entity },
+            }) 
+        }}
+    {% endif %}
 {% endmacro list_actions %}
 
 {# Boton de nuevo elemento #}
@@ -303,7 +308,7 @@
         <button {{ block('attributes') }}>{% if options.icon_prepend %}<i class="{{ options.icon_prepend }} mr-2"></i>{% endif %}<i class="{{ options.icon }} mr-2"></i>{{ options.label|trans }}</button>
             {% if popup.uri is not null %}
             <script>
-                var init = function () {
+                var init{{ btnId }} = function () {
                 {% set uri = build_with_referer(popup.uri,app.request.requestUri) %}
                         $("#{{ btnId }}").on("click", function () {
                             var hide = function (elem) {
@@ -455,10 +460,10 @@
                         });
                     };
                     document.addEventListener("DOMContentLoaded", function (event) {
-                        init();
+                        init{{ btnId }}();
                     });
                     if(document.readyState == "complete" || document.readyState == "interactive"){
-                        init();
+                        init{{ btnId }}();
                     }
             </script>
         {% elseif question.text is not null %}
