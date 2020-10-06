@@ -46,7 +46,7 @@
 {# Botones de lista #}
 {% macro list_actions(params) %}
     {% from '@SFAdminLTE3/default/buttons.html.twig' import a as a %}
-    {% set options = {}|resolve_options(params,{ required: ["action_show","action_edit","entity"] }) %}
+    {% set options = { action_edit: null }|resolve_options(params,{ required: ["action_show","action_edit","entity"] }) %}
 
     {% if options.action_show is not null %}
     {{ a({
@@ -379,7 +379,7 @@
                                 }).done(function (response, textStatus, jqXHR) { //
                                     //Log(response);
                                     //Log(textStatus);
-                                    Log(jqXHR.status);
+                                    //Log(jqXHR.status);
                                     Swal.updateContent(response);
                 {#                                    HTTP_RESET_CONTENT#}
                                     if (jqXHR.status == 205) {
@@ -390,7 +390,7 @@
                                     }
                                 }).fail(function (jqXHR, textStatus, errorThrown) {
                                     rejectPromise(errorThrown);
-                                    //Log(textStatus);
+                                    Log(jqXHR.status);
                                     //Log(jqXHR.responseText);
                                     //Log(errorThrown);
                 {#                                    HTTP_BAD_REQUEST#}
@@ -442,11 +442,15 @@
                                 },
                                 onBeforeOpen: (p) => {
                                     Swal.showLoading();
+                                    //console.log("sss");
                                     $.get("{{ uri }}", function (data) {
                                         Swal.updateContent(data);
                                     })
-                                            .always(function () {
+                                            .always(function (r) {
                                                 Swal.done();
+                                                if(r.status >= 500 && r.status <= 500){
+                                                    Swal.close();
+                                                }
                                             });
                                 }
                             }).then((result) => {
