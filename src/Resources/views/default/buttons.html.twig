@@ -165,9 +165,8 @@
 
 {# Boton de elimiar con formulario con proteccion csrf #}
 {% macro delete(params) %}
-    {% set options = {}|resolve_options(params,{ required: ["action","entity"] }) %}
-    {% set role = { attributes: "DELETE",subject: options.entity,message: null }|resolve_options({},{ required: ["attributes","subject"] }) %}
-
+    {% set options = {role: null}|resolve_options(params,{ required: ["action","entity"] }) %}
+    {% set role = { attributes: "DELETE",subject: options.entity,message: null }|resolve_options(options.role,{ required: ["attributes","subject"] }) %}
     {% from '@SFAdminLTE3/default/buttons.html.twig' import button as button %}
 
     {% set id = random() %}
@@ -175,9 +174,16 @@
     {% set buttonId = "btn_delete_"~id %}
     {% if role.attributes is null or is_granted(role.attributes,role.subject) %}
         {#    Colocar el formulario de eliminar con confirmacion#}
-        <form method="POST" action="{{ options.action }}" id="{{ formId }}">
+        {#<form method="POST" action="{{ options.action }}" id="{{ formId }}">
             <input type="hidden" name="_method" value="DELETE">
             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ options.entity.id) }}">
+            <input type="hidden" name="_referer" value="{{ app.request.requestUri }}">
+        </form>#}
+        {% set id_token = random() %}
+        <form method="POST" action="{{ options.action }}" id="{{ formId }}">
+            <input type="hidden" name="_method" value="DELETE">
+            <input type="hidden" name="_token" value="{{ csrf_token('action-'~id_token~ options.entity.id) }}">
+            <input type="hidden" name="_check_token" value="{{ id_token }}">
             <input type="hidden" name="_referer" value="{{ app.request.requestUri }}">
         </form>
         {{ button({
@@ -187,7 +193,7 @@
             attr: {id: buttonId}
         }) }}
         <script>
-            document.addEventListener("DOMContentLoaded", function (event) {
+            function init{{ formId }}(){
                 $("#{{ buttonId }}").on("click", function () {
                     Swal.fire({
                         title: '{{ "question.item.delete.title"|trans }}',
@@ -204,7 +210,13 @@
                         }
                     });
                 });
+            }
+            document.addEventListener("DOMContentLoaded", function (event) {
+                init{{ formId }}();
             });
+            if(document.readyState == "complete" || document.readyState == "interactive"){
+                init{{ formId }}();
+            }
         </script>
     {% else %}
         {{ button({
