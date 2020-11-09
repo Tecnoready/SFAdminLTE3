@@ -91,17 +91,21 @@
 
 {# Boton de guardado de un nuevo elemento #}
 {% macro save_new(params) %}
-    {% set options = {}|resolve_options(params,{ required: ["role"] }) %}
+    {% set options = {label: "button.save"}|resolve_options(params,{ required: ["role"] }) %}
     {% from '@SFAdminLTE3/default/buttons.html.twig' import save as save %}
-    {{ save({uri: constant('App\\Controller\\BaseController::ACTION_SAVE_NEW_VALUE'),role: options.role }) }}
+    {{ save({
+        uri: constant('App\\Controller\\BaseController::ACTION_SAVE_NEW_VALUE'),
+        role: options.role,
+        label: options.label
+    }) }}
 {% endmacro save_new %}
 
 {# Boton de guardar #}
 {% macro save(params) %}
-    {% set options = {uri: app.request.requestUri}|resolve_options(params,{ required: ["uri","role"] }) %}
+    {% set options = {uri: app.request.requestUri,label: "button.save"}|resolve_options(params,{ required: ["uri","role"] }) %}
     {% from '@SFAdminLTE3/default/buttons.html.twig' import button as button %}
     {{ button({
-        label: "button.save",
+        label: options.label,
         class: "btn btn-primary",
         type: "submit",
         icon: "fas fa-save",
