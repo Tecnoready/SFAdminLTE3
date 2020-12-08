@@ -271,6 +271,7 @@
         <script>
             document.addEventListener("DOMContentLoaded", function (event) {
                 $("#{{ buttonId }}").on("click", function () {
+                    {% if question.text is not null %}
                     Swal.fire({
                         title: '{{ question.title }}',
                         text: "{{ question.text }}",
@@ -296,6 +297,10 @@
                                 $("#{{ formId }}").submit();
                             }
                         });
+                        {% else %}
+{# Sino tiene confirmacion se ejecuta la accion                        #}
+                        $("#{{ formId }}").submit();
+                        {% endif %}
                     });
                 });
         </script>
@@ -307,13 +312,13 @@
 
 {# Constructor  de "button" generico #}
 {% macro button(params) %}
-    {% set defaults = { icon: null,icon_prepend:null, class: 'btn btn-primary',type: null,attr: {},role:{},popup:{},question: { title: null, text: null,on_confirm: null} } %}
+    {% set defaults = { icon: null,icon_prepend:null, class: 'btn btn-primary',type: null,attr: {},role:{},popup:{},question: { title: null, text: null,on_confirm: null},btn_id: null } %}
     {% set options = defaults|resolve_options(params,{ allowedValues: { type: ['submit',null] },required: ["label"] }) %}
     {% set role = { attributes: null,subject: null,message: null }|resolve_options(options.role,{ required: ["attributes","subject"] }) %}
     {% set popup = { uri: null,loading_text: "popup.loading",confirm_button_text: "popup.button.confirm",cancel_button_text: "popup.button.cancel" }|resolve_options(options.popup,{ }) %}
     {% set question = { title: ("question.title"|trans),confirm_button_text: "question.button.yes",cancel_button_text: "question.button.no" }|resolve_options(options.question,{ required: ["text","on_confirm"] }) %}
 
-    {% set id = random() %}
+    {% set id = options.btn_id|default(random()) %}
     {% set btnId = "btn_"~id %}
     {% set attr = options.attr %}
     {% set attr = {class: options.class,id: btnId}|merge(attr) %}
