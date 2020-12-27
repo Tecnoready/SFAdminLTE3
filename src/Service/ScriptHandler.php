@@ -209,9 +209,10 @@ EOF;
             if ($handle) {
                 while (($line = fgets($handle)) !== false) {
                     $line = str_replace("\n", "", $line);
-                    if(in_array($line, $toAdd)){
-                        $index = array_search($line, $toAdd);
-                        unset($toAdd[$index]);
+                    foreach ($toAdd as $index => $l) {
+                        if(strpos($line, $l) !== false){
+                            unset($toAdd[$index]);
+                        }
                     }
                 }
                 fclose($handle);
