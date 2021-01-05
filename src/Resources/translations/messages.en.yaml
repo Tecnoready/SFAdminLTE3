@@ -1,1 +1,17 @@
+popup.loading: "Loading, please wait ..."
+popup.button.cancel: Cancel
+popup.button.confirm: "OK"
+title.alert.info: 'Information!'
+title.alert.success: 'Correct!'
+title.alert.danger: 'Error!'
+title.alert.warning: 'Warning!'
+title.login.sign_in_to_start: "Please log in to start."
+button.forgot_my_password: "I forgot my password"
+title.recover_password: "You are just one step away from your new password, recover your password now."
 help.resetting.request: "You forgot your password? Here you can easily retrieve a new password."
+placeholder.password: "Password"
+placeholder.confirm_password: "Confirm password"
+menu.home: "Home"
+menu.logout: "Close session"
+menu.top.pushmenu: ""
+title.dashboard: "Dashboard"
