@@ -13,17 +13,34 @@
 {% endblock entity_widget %}
 
 {% block date_widget %}
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-        </div>
+    {% set target = form.vars.id~"_tg" %}
+    <div class="input-group date" id="{{ target }}" data-target-input="nearest">
         {{ parent() }}
+        <div class="input-group-append" data-target="#{{ target }}" data-toggle="datetimepicker">
+            <div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
+        </div>
     </div>
+    {% set id = random() %}
     <script>
+        var init{{ id }} = function(){
+            $('#{{ target }}').datetimepicker({
+                format: 'DD/MM/YYYY',
+                icons: {
+                    time: "far fa-clock",
+                },
+                locale: 'es',
+                buttons: {
+                    showClear: true,
+                    showClose: true,
+                },
+            });
+        };
         document.addEventListener("DOMContentLoaded", function (event) {
-            //console.log("DOM fully loaded and parsed");
-            $('#{{ form.vars.id }}').inputmask({'alias': 'datetime', 'inputFormat': 'dd/mm/yyyy'});
+            init{{ id }}();
         });
+        if(document.readyState == "complete" || document.readyState == "interactive"){
+            init{{ id }}();
+        }
     </script>
 {% endblock %}
 
@@ -85,7 +102,6 @@
         <div class="input-group-prepend">
             <span class="input-group-text"><i class="fas fa-phone"></i></span>
         </div>
-        {#        <input type="text" class="form-control" data-inputmask='"mask": "(999) 999-9999"' data-mask>#}
         {{ parent() }}
     </div>
     <script>
