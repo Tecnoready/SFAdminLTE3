@@ -100,8 +100,8 @@
                     {{ options.html_pre|raw }}
                 {% endif %}
                 
-                {% if options.value is null %}
-                <span class="badge badge-secondary">Nulo</span>
+                {% if options.value is null or options.value is empty %}
+                    <span class="badge badge-secondary">Sin asignar</span>
                 {% else %}
                     {% if options.raw %}
                         {{ options.value|raw }}
