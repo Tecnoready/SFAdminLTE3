@@ -6,8 +6,12 @@
     {% set options = params|resolve_options(params,{ required: ["action_index","action_edit","action_delete","entity","role_index"] }) %}
 
     {{ buttons.return_to_list({href: options.action_index,role: options.role_index}) }}
-    {{ buttons.delete({ entity: options.entity, action: options.action_delete }) }}
-    {{ buttons.edit({href: options.action_edit,entity: options.entity }) }}
+    {% if options.action_delete is not null %}
+        {{ buttons.delete({ entity: options.entity, action: options.action_delete }) }}
+    {% endif %}
+    {% if options.action_edit is not null %}
+        {{ buttons.edit({href: options.action_edit,entity: options.entity }) }}
+    {% endif %}
 {% endmacro show_actions %}
 
 {#Botnones estandar de nuevo elemento#}
