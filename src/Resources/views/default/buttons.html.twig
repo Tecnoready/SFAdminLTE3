@@ -246,7 +246,7 @@
 
     {% from '@SFAdminLTE3/default/buttons.html.twig' import button as button %}
 
-    {% set icon = "fas fa-check" %}
+    {% set icon = options.icon|default("fas fa-check") %}
     {% if options.icon is null %}
         {% if options.class == "btn btn-danger" %}
             {% set icon = "fas fa-times-circle" %}
