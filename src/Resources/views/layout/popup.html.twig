@@ -6,15 +6,31 @@
 
 {% block content '' %}
 
-<style>
-    .swal2-popup {
-        width: {{ popup.width }};
-    }
-{#    z-index: 1060 es el popup #}
-    .select2-dropdown {
-        z-index: 1061;
-    }
-    .swal2-actions {
-        z-index: 0;
-    }
-</style>
+    <style>
+        .swal2-popup {
+            width: {{ popup.width }};
+        }
+        @media only screen and (max-width: 1000px) {
+            .swal2-popup {
+                width: 60%;
+            }
+        }
+        @media only screen and (max-width: 800px) {
+            .swal2-popup {
+                width: 80%;
+            }
+        }
+        @media only screen and (max-width: 600px) {
+            .swal2-popup {
+                width: 90%;
+            }
+        }
+
+        {#    z-index: 1060 es el popup #}
+        .select2-dropdown {
+            z-index: 1061;
+        }
+        .swal2-actions {
+            z-index: 0;
+        }
+    </style>

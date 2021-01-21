@@ -19,12 +19,12 @@
     {% set options = defaults|resolve_options(params,{ allowedValues: { type: ['success','danger','warning','info'] } }) %}
     {% set icons = { danger: 'icon fas fa-ban', success: 'icon fas fa-check',warning: 'icon fas fa-exclamation-triangle',info: 'icon fas fa-info'  } %}
     {% set title_defaults = {success: "title.alert.success",danger: "title.alert.danger",warning: "title.alert.warning",info: "title.alert.info"} %}
-    
+
     {% set alert_title = options.title %}
     {% if alert_title is null %}
         {% set alert_title = title_defaults[options.type] %}
     {% endif %}
-    
+
     <div class='alert alert-{{ options.type }} alert-dismissible'>
         {% if options.dismissible %}
             <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button>
@@ -43,24 +43,24 @@
     {% set defaults = { size: null,type:"auto",class: "progress-bar-striped active",value_min:0,value_max:100,now:0,of:0,auto_range:{} } %}
     {% set options = defaults|resolve_options(params,{ allowedValues: { size: [null,'sm','xs','xxs'],type:["primary","success","warning","danger","auto"] } }) %}
     {% set auto_range = { danger: [0..20],warning:[21..60],primary:[61..90],success:[91..100] }|resolve_options(options.auto_range) %}
-    
+
     {% set value_now = options.now %}
     {% if options.of > 0 %}
         {% set value_now = (options.now / options.of) * 100 %}
     {% endif %}
-{#    {% set value_now = value_now|number_format(2) %}#}
+    {#    {% set value_now = value_now|number_format(2) %}#}
     {% set value_now = value_now|round(0,'floor') %}
-    
+
     {% set class = ["progress",options.class] %}
     {% if options.size %}
         {% set class = class|merge(["progress-"~options.size]) %}
     {% endif %}
-    
+
     {% set attr = {class: class|join(' ') } %}
-    
+
     {% set type = options.type %}
     {% if options.type == "auto" %}
-{#        {% set value_formatted = value_now|round(0,'floor') %}#}
+        {#        {% set value_formatted = value_now|round(0,'floor') %}#}
         {% set break = false %}
         {% for key,range in auto_range if not break %}
             {% if value_now in range[0] %}
@@ -68,19 +68,19 @@
                 {% set break = true %}
             {% endif %}
         {% endfor %}
-{#        {{ value_formatted }} - {{ value_now }} - {{ type }}#}
+        {#        {{ value_formatted }} - {{ value_now }} - {{ type }}#}
     {% endif %}
     <div {{ block('attributes') }}>
         {% set class = ["progress-bar","progress-bar-striped","bg-"~type] %}
         {% set attr = {class: class|join(' '),role:"progressbar" } %}
-        
+
         {% set tooltip = {title: value_now~"%"}|resolve_tooltip %}
         {% set attr = attr|merge(tooltip) %}
-        
+
         <div {{ block('attributes') }}
-             aria-valuemin="{{ options.value_min }}" aria-valuemax="{{ options.value_max }}" 
-             style="width: {{ value_now }}%"
-             aria-valuenow="{{ value_now }}">
+            aria-valuemin="{{ options.value_min }}" aria-valuemax="{{ options.value_max }}" 
+            style="width: {{ value_now }}%"
+            aria-valuenow="{{ value_now }}">
             <span class="sr-only">{{ value_now }}%</span>
         </div>
     </div>
@@ -93,4 +93,22 @@
                     <span>.</span>
                     <span>.</span>
                 </span></p></div></div>{#{% endapply %}#}
-{% endmacro loading_container %}
+            {% endmacro loading_container %}
+
+{% macro empty_table_rows(colspan,message,params) %}
+    {% set defaults = { trans_parameters: {} } %}
+    {% set options = defaults|resolve_options(params) %}
+    <tr>
+        <td colspan="{{ colspan }}" class="odd">&nbsp;</td>
+    </tr>
+    <tr>
+        <td colspan="{{ colspan }}" class="text-center">
+            <span class="badge badge-info">
+                {{ message|trans(options.trans_parameters) }}
+            </span>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="{{ colspan }}" class="even">&nbsp;</td>
+    </tr>
+{% endmacro empty_table_rows %}
