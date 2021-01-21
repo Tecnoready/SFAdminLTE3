@@ -273,7 +273,7 @@
                 attr: {id: buttonId}
             }) }}
         <script>
-            document.addEventListener("DOMContentLoaded", function (event) {
+            function init{{ formId }}(){
                 $("#{{ buttonId }}").on("click", function () {
                     {% if question.text is not null %}
                     Swal.fire({
@@ -306,7 +306,13 @@
                         $("#{{ formId }}").submit();
                         {% endif %}
                     });
-                });
+            }
+            document.addEventListener("DOMContentLoaded", function (event) {
+                init{{ formId }}();
+            });
+            if(document.readyState == "complete" || document.readyState == "interactive"){
+                init{{ formId }}();
+            }
         </script>
     {% else %}
         {#        TODO deshabilitar boton si tiene texto o desaparecer#}
