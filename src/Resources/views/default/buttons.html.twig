@@ -44,7 +44,7 @@
     {{ buttons.delete({ entity: options.entity, action: options.action_delete}) }}
 
     {{ buttons.save({role: {attributes: "EDIT",subject:options.entity } }) }}
-    {{ buttons.save_and_close({action: options.action_index,role: {attributes: "EDIT", subject: options.entity} }) }}
+    {{ buttons.save_and_close({action: options.action_show,role: {attributes: "EDIT", subject: options.entity} }) }}
 {% endmacro edit_actions %}
 
 {# Botones de lista #}
@@ -53,7 +53,7 @@
     {% set options = { action_edit: null }|resolve_options(params,{ required: ["action_show","action_edit","entity"] }) %}
 
     {% if options.action_show is not null %}
-    {{ a({
+        {{ a({
         label: "button.list.show",
         href: options.action_show,
         class: "btn btn-link btn-sm",
@@ -61,9 +61,9 @@
         icon_separator: "mr-1",
         role: {attributes: "SHOW",subject:options.entity },
         }) 
-    }}
+        }}
     {% endif %}
-    
+
     {% if options.action_edit is not null %}
         {{ a({
             label: "button.list.edit",
@@ -201,7 +201,7 @@
             attr: {id: buttonId}
         }) }}
         <script>
-            function init{{ formId }}(){
+            function init{{ formId }}() {
                 $("#{{ buttonId }}").on("click", function () {
                     Swal.fire({
                         title: '{{ "question.item.delete.title"|trans }}',
@@ -222,7 +222,7 @@
             document.addEventListener("DOMContentLoaded", function (event) {
                 init{{ formId }}();
             });
-            if(document.readyState == "complete" || document.readyState == "interactive"){
+            if (document.readyState == "complete" || document.readyState == "interactive") {
                 init{{ formId }}();
             }
         </script>
@@ -273,19 +273,19 @@
                 attr: {id: buttonId}
             }) }}
         <script>
-            function init{{ formId }}(){
+            function init{{ formId }}() {
                 $("#{{ buttonId }}").on("click", function () {
-                    {% if question.text is not null %}
-                    Swal.fire({
-                        title: '{{ question.title }}',
-                        text: "{{ question.text }}",
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: '{{ question.confirm_button_text|trans }}',
-                        cancelButtonText: '{{ question.cancel_button_text|trans }}',
-            {% if input.type is not null %}
+            {% if question.text is not null %}
+                                Swal.fire({
+                                    title: '{{ question.title }}',
+                                    text: "{{ question.text }}",
+                                    icon: 'question',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: '{{ question.confirm_button_text|trans }}',
+                                    cancelButtonText: '{{ question.cancel_button_text|trans }}',
+                {% if input.type is not null %}
                             input: '{{ input.type }}',
                             inputPlaceholder: '{{ input.placeholder|trans }}',
                             inputValidator: (value) => {
@@ -293,26 +293,26 @@
                                     return '{{ input.validator|trans }}'
                                 }
                             }
-            {% endif %}
+                {% endif %}
                         }).then((result) => {
                             if (result.value) {
-            {#                        $('#{{ formId }} input[name=_extra]').val(result.value);#}
+                {#                        $('#{{ formId }} input[name=_extra]').val(result.value);#}
                                 $('#{{ formId }} input[id={{ extraId }}]').val(result.value);
                                 $("#{{ formId }}").submit();
                             }
                         });
-                        {% else %}
-{# Sino tiene confirmacion se ejecuta la accion                        #}
-                        $("#{{ formId }}").submit();
-                        {% endif %}
-                    });
-            }
-            document.addEventListener("DOMContentLoaded", function (event) {
-                init{{ formId }}();
-            });
-            if(document.readyState == "complete" || document.readyState == "interactive"){
-                init{{ formId }}();
-            }
+            {% else %}
+                {# Sino tiene confirmacion se ejecuta la accion                        #}
+                                    $("#{{ formId }}").submit();
+            {% endif %}
+                                });
+                            }
+                            document.addEventListener("DOMContentLoaded", function (event) {
+                                init{{ formId }}();
+                            });
+                            if (document.readyState == "complete" || document.readyState == "interactive") {
+                                init{{ formId }}();
+                            }
         </script>
     {% else %}
         {#        TODO deshabilitar boton si tiene texto o desaparecer#}
@@ -337,7 +337,7 @@
     {% endif %}
     {% if role.attributes is null or is_granted(role.attributes,role.subject) %}
         <button {{ block('attributes') }}>{% if options.icon_prepend %}<i class="{{ options.icon_prepend }} mr-2"></i>{% endif %}<i class="{{ options.icon }} mr-2"></i>{{ options.label|trans }}</button>
-            {% if popup.uri is not null %}
+                {% if popup.uri is not null %}
             <script>
                 var init{{ btnId }} = function () {
                 {% set uri = build_with_referer(popup.uri,app.request.requestUri) %}
@@ -479,7 +479,7 @@
                                     })
                                             .always(function (r) {
                                                 Swal.done();
-                                                if(r.status >= 500 && r.status <= 500){
+                                                if (r.status >= 500 && r.status <= 500) {
                                                     Swal.close();
                                                 }
                                             });
@@ -497,32 +497,32 @@
                     document.addEventListener("DOMContentLoaded", function (event) {
                         init{{ btnId }}();
                     });
-                    if(document.readyState == "complete" || document.readyState == "interactive"){
+                    if (document.readyState == "complete" || document.readyState == "interactive") {
                         init{{ btnId }}();
                     }
             </script>
         {% elseif question.text is not null %}
-                <script>
-                    document.addEventListener("DOMContentLoaded", function (event) {
-                        $("#{{ btnId }}").on("click", function () {
-                            Swal.fire({
-                                title: '{{ question.title }}',
-                                text: "{{ question.text }}",
-                                icon: 'question',
-                                showCancelButton: true,
-                                confirmButtonColor: '#3085d6',
-                                cancelButtonColor: '#d33',
-                                confirmButtonText: '{{ question.confirm_button_text|trans }}',
-                                cancelButtonText: '{{ question.cancel_button_text|trans }}',
-                            }).then((result) => {
-                                if (result.value) {
-                                    {{ question.on_confirm|raw }}
-                                }
-                            });
-                            return false;
-                        });
-                    });
-                </script>
+            <script>
+                document.addEventListener("DOMContentLoaded", function (event) {
+                    $("#{{ btnId }}").on("click", function () {
+                        Swal.fire({
+                            title: '{{ question.title }}',
+                            text: "{{ question.text }}",
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: '{{ question.confirm_button_text|trans }}',
+                            cancelButtonText: '{{ question.cancel_button_text|trans }}',
+                        }).then((result) => {
+                            if (result.value) {
+                {{ question.on_confirm|raw }}
+                                                }
+                                            });
+                                            return false;
+                                        });
+                                    });
+            </script>
         {% endif %}
     {% else %}
         {#        TODO deshabilitar boton si tiene texto o desaparecer#}
@@ -547,29 +547,29 @@
         {% set href = build_with_referer(options.href,app.request.requestUri) %}
         {% set attr = attr|merge({class: options.class, href: href, target: options.target,id: aId}) %}
         <a {{ block('attributes') }}>{% if options.icon_prepend %}<i class="{{ options.icon_prepend }} {{ options.icon_separator }}"></i>{% endif %}<i class="{{ options.icon }} {{ options.icon_separator }}"></i>{{ options.label|trans }}</a>
-            {% if question.text is not null %}
-                <script>
-                    document.addEventListener("DOMContentLoaded", function (event) {
-                        $("#{{ aId }}").on("click", function () {
-                            Swal.fire({
-                                title: '{{ question.title }}',
-                                text: "{{ question.text }}",
-                                icon: 'question',
-                                showCancelButton: true,
-                                confirmButtonColor: '#3085d6',
-                                cancelButtonColor: '#d33',
-                                confirmButtonText: '{{ question.confirm_button_text|trans }}',
-                                cancelButtonText: '{{ question.cancel_button_text|trans }}',
-                            }).then((result) => {
-                                if (result.value) {
-                                    window.location.href = $("#{{ aId }}").attr("href");
-                                }
-                            });
-                            return false;
+                {% if question.text is not null %}
+            <script>
+                document.addEventListener("DOMContentLoaded", function (event) {
+                    $("#{{ aId }}").on("click", function () {
+                        Swal.fire({
+                            title: '{{ question.title }}',
+                            text: "{{ question.text }}",
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: '{{ question.confirm_button_text|trans }}',
+                            cancelButtonText: '{{ question.cancel_button_text|trans }}',
+                        }).then((result) => {
+                            if (result.value) {
+                                window.location.href = $("#{{ aId }}").attr("href");
+                            }
                         });
+                        return false;
                     });
-                </script>
-            {% endif %}
+                });
+            </script>
+        {% endif %}
     {% else %}
         {% if role.message is not null %}
             {% set attr = attr|merge({class: options.class ~ " disabled", href: ""}) %}
