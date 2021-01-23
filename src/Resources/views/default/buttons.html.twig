@@ -264,7 +264,7 @@
             <input type="hidden" name="_token" value="{{ csrf_token('action-'~id_token~ options.entity.id) }}">
             <input type="hidden" name="_check_token" value="{{ id_token }}">
             <input type="hidden" name="_referer" value="{{ app.request.requestUri }}">
-            <input type="hidden" id="{{ extraId }}" name="{{ options.extra_name }}" value="{{ options.extra_value }}">
+            <input type="hidden" {% if options.extra_value is null %}id="{{ extraId }}"{% endif %} name="{{ options.extra_name }}" value="{{ options.extra_value }}">
         </form>
         {{ button({
                 label: options.label,
