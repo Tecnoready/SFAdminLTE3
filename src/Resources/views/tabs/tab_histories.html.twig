@@ -17,6 +17,39 @@
                             label: "Updated from ip"
                         }) }}
     </div>
+    <table class="table table-hover text-nowrap datagrid">
+        <thead>
+            <tr>
+                {# sorting of properties based on query components #}
+                <th{% if histories.isSorted('e.user') %} class="sorted"{% endif %}>
+                    {{ knp_pagination_sortable(histories, 'User'|trans, 'e.user') }}
+                </th>
+                <th{% if histories.isSorted('e.description') %} class="sorted"{% endif %}>
+                    {{ knp_pagination_sortable(histories, 'Description'|trans, 'e.description') }}
+                </th>
+                <th{% if histories.isSorted(['e.createdAt']) %} class="sorted"{% endif %}>
+                    {{ knp_pagination_sortable(histories, "Created at"|trans, ['e.createdAt']) }}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {# table body #}
+            {% for history in histories %}
+                <tr {% if loop.index is odd %}class="color"{% endif %}>
+                    <td>{{ history.user }}</td>
+                    <td>{{ history.description|raw }}
+                    </td>
+                    <td>
+                        <span data-toggle="tooltip" data-placement="top" title="{{ history.userAgent }}">{{ history.createdAt | my_date_time }}</span><br/>
+                        <b>({{ history.createdFromIp }})</b>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>        
+    <div class="navigation text-right">
+        {{ knp_pagination_render(histories) }}
+    </div>
 {% endblock %}
 
 {% block tab_buttons %}
