@@ -30,7 +30,7 @@
             <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button>
         {% endif %}
         <h5><i class='{{ icons[options.type] }}'></i> {{ alert_title|trans(options.title_trans_parameters) }} </h5>
-        {{ content|trans(options.content_trans_parameters) }}
+        {{ content|trans(options.content_trans_parameters)|raw }}
     </div>
 {% endmacro alert %}
 
