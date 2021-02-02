@@ -1,6 +1,7 @@
 {% extends "TecnocreacionesToolsBundle:Tabs:show.html.twig" %}
 
 {% import '@SFAdminLTE3/default/show_fields.html.twig' as fields %}
+{% import '@SFAdminLTE3/default/ui_elements.html.twig' as ui_elements %}
 
 {% block tab_body %}
     <div class="form-horizontal">
@@ -44,6 +45,8 @@
                         <b>({{ history.createdFromIp }})</b>
                     </td>
                 </tr>
+            {% else %}
+                {{ ui_elements.empty_table_rows(3,"table.empty.tab.histories") }}
             {% endfor %}
         </tbody>
     </table>        
