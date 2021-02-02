@@ -259,7 +259,7 @@
         {% set buttonId = "btn_action_"~id %}
         {% set extraId = "extra_"~id %}
         {#    Colocar el formulario de la accion con confirmacion#}
-        <form method="POST" action="{{ options.action }}" id="{{ formId }}">
+        <form method="POST" action="{{ options.action }}" id="{{ formId }}" style="display: inline;">
             <input type="hidden" name="_method" value="POST">
             <input type="hidden" name="_token" value="{{ csrf_token('action-'~id_token~ options.entity.id) }}">
             <input type="hidden" name="_check_token" value="{{ id_token }}">
@@ -323,7 +323,7 @@
 {# Constructor  de "button" generico #}
 {% macro button(params) %}
     {% set defaults = { icon: null,icon_prepend:null, class: 'btn btn-primary',type: null,attr: {},role:{},popup:{},question: { title: null, text: null,on_confirm: null},btn_id: null } %}
-    {% set options = defaults|resolve_options(params,{ allowedValues: { type: ['submit',null] },required: ["label"] }) %}
+    {% set options = defaults|resolve_options(params,{ allowedValues: { type: ['submit',"reset",null] },required: ["label"] }) %}
     {% set role = { attributes: null,subject: null,message: null }|resolve_options(options.role,{ required: ["attributes","subject"] }) %}
     {% set popup = { uri: null,loading_text: "popup.loading",confirm_button_text: "popup.button.confirm",cancel_button_text: "popup.button.cancel" }|resolve_options(options.popup,{ }) %}
     {% set question = { title: ("question.title"|trans),confirm_button_text: "question.button.yes",cancel_button_text: "question.button.no" }|resolve_options(options.question,{ required: ["text","on_confirm"] }) %}
