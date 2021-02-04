@@ -22,7 +22,7 @@
 
     {{ buttons.return_to_list({href: options.action_index,role: options.role_index}) }}
     {{ buttons.save_new({role:options.role_new}) }}
-    {{ buttons.save_and_close({action: options.action_index,role:options.role_new }) }}
+    {{ buttons.save_and_close({action: null,role:options.role_new }) }}
 {% endmacro new_actions %}
 
 {#Botones estandar de edicion#}
@@ -144,7 +144,7 @@
         icon: "fas fa-list",
         icon_prepend: "fas fa-save mr-1",
         role: options.role,
-        attr: { form: "form_main",name:constant('App\\Controller\\BaseController::ACTION_SAVE'), value: options.action },
+        attr: { form: "form_main",name:constant('App\\Controller\\BaseController::ACTION_SAVE'), value: options.action|default(constant('App\\Controller\\BaseController::ACTION_SAVE_AND_SHOW')) },
     }) }}
 
 {% endmacro save_and_close %}
