@@ -141,7 +141,7 @@
             }
             var croppable = false;
             var cropper = new Cropper(image, {
-                aspectRatio: 1,
+                aspectRatio: {{ aspectRatio }},
                 viewMode: 1,
                 ready: function () {
                     croppable = true;
