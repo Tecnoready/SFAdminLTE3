@@ -3,12 +3,21 @@
 {% block entity_widget %}
     {{ block("choice_widget") }}
     <script>
-        document.addEventListener("DOMContentLoaded", function (event) {
+        {% set id = random() %}
+        var init{{ id }} = function(){
             //console.log("DOM fully loaded and parsed");
             $('#{{ form.vars.id }}').select2({
-                theme: 'bootstrap4'
+                theme: 'bootstrap4',
+{#                dropdownAutoWidth : true,#}
+                width: '100%'
             });
+        };
+        document.addEventListener("DOMContentLoaded", function (event) {
+            init{{ id }}();
         });
+        if(document.readyState == "complete" || document.readyState == "interactive"){
+            init{{ id }}();
+        }
     </script>
 {% endblock entity_widget %}
 
