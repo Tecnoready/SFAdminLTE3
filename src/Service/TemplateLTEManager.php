@@ -41,9 +41,10 @@ class TemplateLTEManager
             "default_avatar" => "bundles/sfadminlte3/img/avatar_m.png",
             "logo" => "build/images/logo.png",
             "route_runtime_js" => null,
+            "search_route" => null,
             "right_navbar" => "@SFAdminLTE3/default/right_navbar.html.twig",
         ]);
-        $resolver->setDefined(["menu_builder","app_name","user_profile_photo_property","default_avatar","logo","route_main","route_runtime_js"]);
+        $resolver->setDefined(["menu_builder","app_name","user_profile_photo_property","default_avatar","logo","route_main","route_runtime_js","search_route"]);
         $resolver->setRequired(["route_main","footer_version","footer_name","footer_href","footer_year"]);
         $this->options = $resolver->resolve($options);
         return $this;
@@ -57,7 +58,7 @@ class TemplateLTEManager
      */
     public function getOption($option)
     {
-        if(!isset($this->options[$option])){
+        if(!array_key_exists($option, $this->options)){
             throw new RuntimeException(sprintf("La opción '%s' no existe. Las definidas son %s",$option, implode(", ",array_keys($this->options))));
         }
         

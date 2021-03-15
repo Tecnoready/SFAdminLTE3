@@ -31,17 +31,19 @@
                         {#                        <!-- Left navbar links -->#}
                         {{ knp_menu_render('top',{template: "@SFAdminLTE3/menu/top.html.twig"}) }}
 
-                        <!-- SEARCH FORM -->
-                        <form class="form-inline ml-3">
-                            <div class="input-group input-group-sm">
-                                <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
-                                <div class="input-group-append">
-                                    <button class="btn btn-navbar" type="submit">
-                                        <i class="fas fa-search"></i>
-                                    </button>
+                        {% if template_lte_manager.getOption("search_route") is not null %}
+                            <!-- SEARCH FORM -->
+                            <form class="form-inline ml-3">
+                                <div class="input-group input-group-sm">
+                                    <input class="form-control form-control-navbar" type="search" placeholder="{{ "Search"|trans }}" aria-label="Search">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-navbar" type="submit">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        </form>
+                            </form>
+                        {% endif %}
 
 {#                        <!-- Right navbar links -->#}
                         {% include template_lte_manager.getOption("right_navbar") %}
